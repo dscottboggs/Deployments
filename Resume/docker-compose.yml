@@ -1,0 +1,12 @@
+# docker-compose.yaml
+version: "2"
+services:
+    resume:         # my resume
+      image: nginx
+      volumes:
+        - ./config:/etc/nginx
+        - ./webroot:/usr/share/nginx/html
+      environment:
+        VIRTUAL_HOST:       s.scott.tams.tech,s.resume.tams.tech,s.scott.madscientists.co
+        LETSENCRYPT_HOST:   s.scott.tams.tech,s.resume.tams.tech,s.scott.madscientists.co
+        LETSENCRYPT_EMAIL:  sysadmin@tams.tech
