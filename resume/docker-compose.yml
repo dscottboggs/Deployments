@@ -12,7 +12,6 @@ services:
         LETSENCRYPT_EMAIL:  sysadmin@tams.tech
       expose:
         - '80'
-        - '443'
       networks:
         - reverse_proxy_default
 networks:
