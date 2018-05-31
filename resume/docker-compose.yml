@@ -10,3 +10,11 @@ services:
         VIRTUAL_HOST:       s.scott.tams.tech
         LETSENCRYPT_HOST:   s.scott.tams.tech
         LETSENCRYPT_EMAIL:  sysadmin@tams.tech
+      expose:
+        - '80'
+        - '443'
+      networks:
+        - reverse_proxy_default
+networks:
+  reverse_proxy_default:
+    external: true
