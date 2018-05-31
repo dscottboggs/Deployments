@@ -1,4 +1,5 @@
-from requests import get, Response
+"""Up-ness monitoring for the Resume service."""
+from requests import get
 
 urls = list("s.scott.tams.tech")
 
@@ -36,10 +37,10 @@ def test_requests():
     """Test that making a request returns the right values."""
     for url in urls:
         for page in files.values():
-            response = get(f"http://{url}/{page.filename}")
+            response = get("http://%s/%s" % (url, page.filename))
             assert response.ok
             assert response.status_code == 301
-            response = get(f"https://{url}/{page.filename}")
+            response = get("https://%s/%s" % (url, page.filename))
             assert response.ok
             assert response.status_code == 200
             assert hash_data(
@@ -50,5 +51,5 @@ def test_requests():
 def test_disallowed():
     """Check that attempting to access disallowed URLs is denied."""
     for url in urls:
-        response = get(f"https://{url}/.git/FETCH_HEAD")
+        response = get("https://%s/.git/FETCH_HEAD" % url)
         assert not response.ok
