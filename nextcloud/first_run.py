@@ -74,25 +74,9 @@ def install_nextcloud(nextcloud_container):
         filters={u"name": u"nextcloud_frontend_1"}
     )[0]
 
-
 def set_trusted_domains(nextcloud_container):
     cmd_output = nextcloud_container.exec_run(
-        "php occ config:list", user="www-data"
-    )
-    if cmd_output.exit_code:
-        print "Error running command to get config:"
-        print cmd_output.output
-        exit(cmd_output.exit_code)
-    config = loads(cmd_output.output)
-    config['system']['trusted_domains'] = ["s.cloud.tams.tech"]
-    cmd = "echo '%s' > /tmp/nextcloud.config.json" % dumps(config)
-    cmd_output = nextcloud_container.exec_run(cmd).output
-    if cmd_output.exit_code:
-        print "Error running the command to store the data in a tmp file:"
-        print cmd_output.output
-        exit(cmd_output.exit_code)
-    cmd_output = nextcloud_container.exec_run(
-        "php occ config:import /tmp/nextcloud.config.json"
+        "sed -i s/localhost/s.cloud.tams.tech/ config/config.php"
     )
     if cmd_output.exit_code:
         print "Error running the command to update the config:"
