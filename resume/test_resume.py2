@@ -30,8 +30,9 @@ files = {
 }
 
 
-# Get the md5 hash of some binary data.
-hash_data = lambda data: md5(data).hexdigest()
+def hash_data(data):
+    """Get the md5 hash of some binary data."""
+    return md5(data).hexdigest()
 
 
 def test_requests():

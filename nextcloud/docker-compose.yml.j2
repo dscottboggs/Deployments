@@ -1,0 +1,20 @@
+version: '2.0'
+services:
+  frontend:
+    image: nextcloud:13.0
+    expose:
+      - '80'
+    links:
+      - db
+    volumes:
+      - ./mounts/webroot:/var/www/html
+  database:
+    image: mariadb:latest
+    restart: always
+    volumes:
+      - ./mounts/database:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: true
+      MYSQL_PASSWORD: {{ password }}
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud

@@ -1,3 +1,5 @@
 __pycache__/
 .cache/
 certs/
+passwords.yml
+nextcloud/docker-compose.yml
