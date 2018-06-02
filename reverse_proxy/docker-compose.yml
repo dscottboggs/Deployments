@@ -18,6 +18,6 @@ services:
         - ./reverse_proxy/certs:/etc/nginx/certs
       volumes_from:
         - "nginx-proxy"
-      environment:
-        ACME_CA_URI: https://acme-staging.api.letsencrypt.org/directory
+#      environment:
+#        ACME_CA_URI: https://acme-staging.api.letsencrypt.org/directory
 # Use the above URL until you're sure everything works, lest you be banned!

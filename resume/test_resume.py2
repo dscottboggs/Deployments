@@ -1,7 +1,8 @@
 """Up-ness monitoring for the Resume service."""
 from requests import get
+from hashlib import md5
 
-urls = list("s.scott.tams.tech")
+urls = ["s.scott.tams.tech"]
 
 
 class FileData:
@@ -39,12 +40,15 @@ def test_requests():
         for page in files.values():
             response = get("http://%s/%s" % (url, page.filename))
             assert response.ok
-            assert response.status_code == 301
+            assert len(response.history) == 1
+            assert response.history[0].status_code == 301
+            assert response.status_code == 200
             response = get("https://%s/%s" % (url, page.filename))
             assert response.ok
+            assert not response.history
             assert response.status_code == 200
             assert hash_data(
-                response.content, page.encoding
+                response.content
             ) == page.hash
 
 
