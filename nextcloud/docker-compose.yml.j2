@@ -10,6 +10,11 @@ services:
       - ./mounts/webroot:/var/www/html
     networks:
       - nextcloud_db_network
+      - reverse_proxy_default
+    environment:
+      VIRTUAL_HOST: s.cloud.tams.tech
+      LETSENCRYPT_HOST: s.cloud.tams.tech
+      LETSENCRYPT_EMAIL: scott@tams.tech
   database:
     image: mariadb:latest
     restart: always
@@ -20,14 +25,9 @@ services:
       MYSQL_PASSWORD: {{ password }}
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud
-      VIRTUAL_HOST: s.cloud.tams.tech
-      LETSENCRYPT_HOST: s.cloud.tams.tech
-      LETSENCRYPT_EMAIL: scott@tams.tech
     networks:
-      - reverse_proxy_default
       - nextcloud_db_network
 networks:
   reverse_proxy_default:
     external: true
   nextcloud_db_network:
-    driver: default
