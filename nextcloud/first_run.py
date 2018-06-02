@@ -70,13 +70,9 @@ def install_nextcloud(nextcloud_container):
         print install_result.output
         exit(install_result.exit_code)
     check_call(u'docker-compose down && docker-compose up -d', shell=True)
-    print(
-          font.build(FOREGROUND_COLOR=b"CYAN", WEIGHT=b"BOLD")
-        + b"The nextcloud container should be ready now."
-        + font.build(WEIGHT=b'NORMAL')
-        + b"Switching to Apache log output..."
-        + font.build(b'RESET')
-    )
+    return client.containers.list(
+        filters={u"name": u"nextcloud_frontend_1"}
+    )[0]
 
 
 def set_trusted_domains(nextcloud_container):
@@ -84,22 +80,39 @@ def set_trusted_domains(nextcloud_container):
         "php occ config:list", user="www-data"
     )
     if cmd_output.exit_code:
-        print "Error running command to get config."
+        print "Error running command to get config:"
+        print cmd_output.output
         exit(cmd_output.exit_code)
     config = loads(cmd_output.output)
     config['system']['trusted_domains'] = ["s.cloud.tams.tech"]
-    check_call("echo '%s' > /tmp/nextcloud.config.json" % dumps(config))
-    set_config_output = nextcloud_container.exec_run(
+    cmd = "echo '%s' > /tmp/nextcloud.config.json" % dumps(config)
+    cmd_output = nextcloud_container.exec_run(cmd).output
+    if cmd_output.exit_code:
+        print "Error running the command to store the data in a tmp file:"
+        print cmd_output.output
+        exit(cmd_output.exit_code)
+    cmd_output = nextcloud_container.exec_run(
         "php occ config:import /tmp/nextcloud.config.json"
     )
+    if cmd_output.exit_code:
+        print "Error running the command to update the config:"
+        print cmd_output.output
+        exit(cmd_output.exit_code)
 
 
 def main():
     cont = compose()
-    install_nextcloud(cont)
+    cont = install_nextcloud(cont)
     set_trusted_domains(cont)
 
 
 if __name__ == '__main__':
     main()
+    print(
+          font.build(FOREGROUND_COLOR=b"CYAN", WEIGHT=b"BOLD")
+        + b"The nextcloud container should be ready now."
+        + font.build(WEIGHT=b'NORMAL')
+        + b"Switching to Apache log output..."
+        + font.build(b'RESET')
+    )
     switch_to_cmd(u"docker-compose", u"docker-compose", u'logs', u'-f')
