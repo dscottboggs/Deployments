@@ -24,7 +24,7 @@ class TerminalOutputModifiers:
         'WHITE':            '37;',
         'BLACK':            '30;',
         'BRIGHT_RED':       '31;1;',
-        'BRIGHT_GREEN':     '32;1;'
+        'BRIGHT_GREEN':     '32;1;',
         'BRIGHT_YELLOW':    '33;1;',
         'BRIGHT_BLUE':      '34;1;',
         'BRIGHT_MAGENTA':   '35;1;',
@@ -44,7 +44,7 @@ class TerminalOutputModifiers:
         'WHITE':            '47;',
         'BLACK':            '40;',
         'BRIGHT_RED':       '101;',
-        'BRIGHT_GREEN':     '102;'
+        'BRIGHT_GREEN':     '102;',
         'BRIGHT_YELLOW':    '103;',
         'BRIGHT_BLUE':      '104;',
         'BRIGHT_MAGENTA':   '105;',
@@ -57,3 +57,28 @@ class TerminalOutputModifiers:
     FRAMED                  = '51;'
     ENCIRCLED               = '52;'
     OVERLINED               = {b'ON': '53;', b'OFF': b'54;'}
+
+    def build(self, *effects, **kweffects):
+        """Build an effects string.
+
+        Top-level values should be specified as strings, and effects that have
+        more than one choice should be specified as keyword arguments.
+
+        For example:
+            TerminalOutputModifiers.build("FRAMED", FOREGROUND_COLOR="MAGENTA")
+        """
+        out = self.START
+        for effect in effects:
+            if effect in self.__dict__:
+                out += self.__dict__.get(effect)
+            else:
+                print("Effect %s not found." % effect)
+        for effect, value in kweffects.items():
+            if effect in self.__dict__.keys():
+                if value in self.__dict__.get(effect):
+                    out += self.__dict__[effect][value]
+                else:
+                    print("Effect %s has no %s value" % (effect, value))
+            else:
+                print("Effect %s not found" % effect)
+        return out
