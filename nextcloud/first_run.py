@@ -55,15 +55,19 @@ nextcloud_container = client.containers.list(
     filters={u"name": u"nextcloud_frontend_1"}
 )[0]
 assert nextcloud_container.status == u"running"
-install_result = nextcloud_container.exec_run(
-      u'php occ maintenance:install --database "mysql" '
+install_command = (
+    u'php occ maintenance:install --database "mysql" '
     + u'--database-name "nextcloud" --database-user "nextcloud" '
-    + u'--database-host "nextcloud_database_1" --database-port "3306"'
-    + u'--database-pass "%s" --admin-user "scott"' % passwords[u'database']
-    + u'--admin-pass "%s"' % passwords[u'admin'],
-      user=u'www-data',
+    + u'--database-host "nextcloud_database_1" --database-port "3306" '
+    + u'--database-pass "%s" --admin-user "scott" ' % passwords[u'database']
+    + u'--admin-pass "%s"' % passwords[u'admin']
+)
+install_result = nextcloud_container.exec_run(
+    install_command, user=u'www-data',
 )   # ^^ blocks until done.
 if install_result.exit_code:
+    print "Installation command: %s" % install_command
+    print "resulted in the following error:"
     print install_result.output
     exit(install_result.exit_code)
 check_call(u'docker-compose down && docker-compose up -d', shell=True)
