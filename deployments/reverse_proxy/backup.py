@@ -2,6 +2,8 @@
 from subprocess import check_call
 from datetime   import datetime
 from tarfile    import TarFile
+from os         import makedirs, access, F_OK as file_exists
+from os.path    import isdir
 
 
 class BasicRsyncBackup:
@@ -13,8 +15,19 @@ class BasicRsyncBackup:
         - source_dir
     """
 
+    @staticmethod
+    def prep_folder(folder):
+        """Make sure that the folder exists and is writable."""
+        if access(folder, file_exists):
+            if isdir(folder):
+                return
+            raise OSError("%s is a file but we need a folder there." % folder)
+        makedirs(folder)
+
     def do_backup(self):
         """Perform each step in the backup procedure."""
+        self.prep_folder(self.backup_dir)
+        self.prep_folder(self.stage)
         self.copy_files_to_stage()
         self.archive()
 
