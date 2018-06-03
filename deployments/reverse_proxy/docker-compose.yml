@@ -6,16 +6,16 @@ services:
         - "80:80"
         - "443:443"
       volumes:
-        - /run/docker.sock:/tmp/docker.sock:ro
-        - ./reverse_proxy/vhost.d:/etc/nginx/vhost.d
-        - ./reverse_proxy/certs:/etc/nginx/certs
-        - ./reverse_proxy/webroot:/usr/share/nginx/html
+        - /var/run/docker.sock:/tmp/docker.sock:ro
+        - ./mounts/vhost.d:/etc/nginx/vhost.d
+        - ./mounts/certs:/etc/nginx/certs
+        - ./mounts/webroot:/usr/share/nginx/html
 
     letsencrypt-nginx-proxy-companion: # should automatically handle
       image: jrcs/letsencrypt-nginx-proxy-companion #letsencrypt config
       volumes:
         - "/var/run/docker.sock:/var/run/docker.sock:ro"
-        - ./reverse_proxy/certs:/etc/nginx/certs
+        - ./mounts/certs:/etc/nginx/certs
       volumes_from:
         - "nginx-proxy"
 #      environment:
