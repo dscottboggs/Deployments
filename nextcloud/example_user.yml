@@ -1,0 +1,18 @@
+admin:
+  - display_name: Full Name
+    user_id: sign_in_name
+    email: email@address.com
+    password: random-pa$sw0rd
+  - display_name: Optional second admin
+    user_id: not_required
+    email: but_perfectly@valid.com
+    password: delete_if_not_used
+others:
+  - display_name: Same format
+    user_id: as_above
+    email: you@get.the
+    password: idea.jpg
+database: password
+urls:
+  - cloud.example.org
+  - m.cloud.example.org

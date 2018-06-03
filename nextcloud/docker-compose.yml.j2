@@ -12,9 +12,9 @@ services:
       - nextcloud_db_network
       - reverse_proxy_default
     environment:
-      VIRTUAL_HOST: s.cloud.tams.tech
-      LETSENCRYPT_HOST: s.cloud.tams.tech
-      LETSENCRYPT_EMAIL: scott@tams.tech
+      VIRTUAL_HOST: {{ url }}
+      LETSENCRYPT_HOST: {{ url }}
+      LETSENCRYPT_EMAIL: {{ admin_email }}
   database:
     image: mariadb:latest
     restart: always
