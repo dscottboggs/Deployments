@@ -1,3 +1,6 @@
+from docker import DockerClient
+client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
+
 class TerminalOutputModifiers:
     """ANSI codes for terminal output colors and effects."""
     START                   = b"\033[;"
@@ -10,9 +13,10 @@ class TerminalOutputModifiers:
     INVERSE_COLOR           = {b'ON': b'7;', b'OFF': b'27;'}
     STRIKETHROUGH           = {b'ON': b'9;', b'OFF': b'29;'}
     # ^^ probably won't work
-    FONTS                   = [ # FONTS[0] is the default, the rest are alts
-        b'10;', b'11;', b'12;', b'13;', b'14;', b'15;', b'16;', b'17;', b'18;',
-        b'19;'
+    FONTS                   = [
+        # FONTS[0] is the default, the rest are alternatives
+        b'10;', b'11;', b'12;', b'13;', b'14;', b'15;', b'16;', b'17;',
+        b'18;', b'19;'
     ]
     FOREGROUND_COLOR        = {
         'RED':              '31;',
@@ -102,7 +106,7 @@ def occ(environment, *cmdargs):
         if environment:
             if isinstance(environment, dict):
                 for k, v in environment.items():
-                    cmd += "%s=%s" % k, v
+                    cmd += "%s=%s" % (k, v)
                 return cmd
             elif isinstance(environment, list):
                 for env in environment:
@@ -111,7 +115,7 @@ def occ(environment, *cmdargs):
             else:
                 raise TypeError(
                     "Environment must be a list or dict, got %s of type %s."
-                    % environment, type(environment)
+                    % (environment, type(environment))
                 )
         else:
             return ''

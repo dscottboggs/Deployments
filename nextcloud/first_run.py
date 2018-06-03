@@ -5,10 +5,9 @@ from yaml       import load, dump
 from json       import loads, dumps
 from subprocess import check_call
 from time       import sleep
-from misc       import TerminalOutputModifiers, occ
+from misc       import TerminalOutputModifiers, occ, client
 from os         import execlp                                  as switch_to_cmd
 
-client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
 font   = TerminalOutputModifiers()
 with open(u"user.yml", u'r') as uInfo_file:
     user_info = load(uInfo_file)
@@ -39,7 +38,7 @@ def wait(until, condition=lambda: False, throw=False):
 def compose():
     """Create the docker-compose file from the template and call 'up' on it."""
     urls = ''
-    if user_info.get('urls'):
+    if not user_info.get('urls'):
         print("At least one URL must be specified.")
         exit(1)
     elif len(user_info['urls']) == 1:
@@ -70,12 +69,13 @@ def compose():
 def install_nextcloud(nextcloud_container):
     assert nextcloud_container.status == u"running"
     if not occ(
+                None,
                 "maintenance:install",
                 '--database="mysql"',
                 '--database-name="nextcloud"',
                 '--database-user="nextcloud"',
                 '--database-host="nextcloud_database_1"',
-                '--database-pass="%s"' % user_info[u'database']
+                '--database-pass="%s"' % user_info[u'database'],
                 '--admin-user="%s"' % user_info[u'admin'][0][u'user_id'],
                 '--admin-pass="%s"' % user_info[u'admin'][0][u'password']
             ):
@@ -107,21 +107,22 @@ def setup_users():
                 {"OC_PASS": admin['password']},
                 'user:create', "--password-from-env",
                 '--display-name="%s"' % admin['display_name'],
-                '--group="admin"'
+                '--group="admin"',
                 admin['user_id'],
             )
             print "Added user %s. Please remember to set email in the GUI."\
                 % admin['display_name']
-    for user in user_info['others']:
-        if not occ(None, "user:info", user['user_id']):
-            occ(
-                {"OC_PASS": user['password']},
-                'user:create', "--password-from-env",
-                '--display-name="%s"' % user['display_name'],
-                user['user_id'],
-            )
-            print "Added user %s. Please remember to set email in the GUI."\
-                % user['display_name']
+    if user_info.get('others'):
+        for user in user_info.get('others'):
+            if not occ(None, "user:info", user['user_id']):
+                occ(
+                    {"OC_PASS": user['password']},
+                    'user:create', "--password-from-env",
+                    '--display-name="%s"' % user['display_name'],
+                    user['user_id'],
+                )
+                print "Added user %s." % user['display_name']
+                print "Please remember to set email in the GUI."
 
 
 def main():
@@ -133,7 +134,7 @@ def main():
     cont = compose()
     cont = install_nextcloud(cont)
     set_trusted_domains(cont)
-    setup_users(cont)
+    setup_users()
 
 
 if __name__ == '__main__':

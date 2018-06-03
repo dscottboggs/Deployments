@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from requests   import get
-from first_run  import client
-from yaml       import load
+from requests import get
+from misc     import client, occ
+from yaml     import load
 
 
 def test_index():
@@ -10,11 +10,18 @@ def test_index():
     assert response.ok
     assert response.history
     assert response.history[0].status_code == 301
+    assert response.history[0].url == "http://s.cloud.tams.tech/"
+    assert response.history[1].status_code == 302
+    assert response.history[1].url == "https://s.cloud.tams.tech/"
     assert response.status_code == 200
+    assert response.url == "https://s.cloud.tams.tech/login"
     response = get("https://s.cloud.tams.tech")
     assert response.ok
-    assert not response.history
+    assert response.history
+    assert response.history[0].status_code == 302
+    assert response.history[0].url == "https://s.cloud.tams.tech/"
     assert response.status_code == 200
+    assert response.url == "https://s.cloud.tams.tech/login"
 
 def test_user():
     """Test that the user is present and all."""
