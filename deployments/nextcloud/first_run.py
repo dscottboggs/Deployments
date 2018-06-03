@@ -1,12 +1,12 @@
 #!/usr/bin/env python2
-from docker     import DockerClient
-from jinja2     import Template
-from yaml       import load, dump
-from json       import loads, dumps
-from subprocess import check_call
-from time       import sleep
-from nextcloud  import occ, client, font
-from os         import execlp                                  as switch_to_cmd
+from docker                 import DockerClient
+from jinja2                 import Template
+from yaml                   import load, dump
+from json                   import loads, dumps
+from subprocess             import check_call
+from time                   import sleep
+from deployments.nextcloud  import occ, client, font
+from os                     import execlp                      as switch_to_cmd
 
 
 example_users = [

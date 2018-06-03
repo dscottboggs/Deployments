@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-from requests   import get, put, delete
-from yaml       import load
-from nextcloud  import user_info, client, occ
-from time       import sleep
-from subprocess import check_call
+from requests               import get, put, delete
+from yaml                   import load
+from deployments.nextcloud  import user_info, client, occ
+from time                   import sleep
+from subprocess             import check_call
 
 
 def test_index():

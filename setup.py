@@ -15,5 +15,13 @@ setup(
         "Natural Language :: English ",
         "Operating System :: POSIX :: Linux",
         "Topic :: Internet :: WWW/HTTP"
+    ],
+    modules=[
+        "deployments.reverse_proxy",
+        "deployments.resume",
+        "deployments.nextcloud"
+    ],
+    install_requires=[
+        'docker', 'pytest', 'PyYaml', 'Jinja2', 'requests'
     ]
 )

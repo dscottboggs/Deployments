@@ -1,4 +1,4 @@
-from requests import get, Response
+from requests import get
 
 urls = list("s.scott.tams.tech")
 
