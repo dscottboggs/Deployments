@@ -72,3 +72,18 @@ def test_index():
     assert response.ok
     assert not response.history
     assert response.status_code == 200
+
+def test_user():
+    """Test that the user is present and all."""
+    assert {'scott': 'scott'} in load(occ(None, "user:list"))
+    unifostr = occ(None, "user:info", "scott")
+    assert uinfostr
+    uinfo = load(uinfostr)
+    assert {'user_id': 'scott'} in uinfo
+    assert {'display_name': 'scott'} in uinfo
+    assert {'enabled': True} in uinfo
+    ugroups = [
+        elem for elem in uinfo if tuple(elem.keys()) == ('groups')
+    ][0]['groups']
+    assert 'admin' in ugroups
+    assert {'quota': 'none'} in uinfo
