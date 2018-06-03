@@ -4,6 +4,7 @@ from misc       import client, occ
 from yaml       import load
 from first_run  import user_info
 from time       import sleep
+from subprocess import check_call
 
 
 def test_index():
@@ -28,16 +29,13 @@ def test_index():
 def test_user():
     """Test that the user is present and all."""
     assert {'scott': 'scott'} in load(occ(None, "user:list"))
-    unifostr = occ(None, "user:info", "scott")
+    uinfostr = occ(None, "user:info", "scott")
     assert uinfostr
     uinfo = load(uinfostr)
     assert {'user_id': 'scott'} in uinfo
     assert {'display_name': 'scott'} in uinfo
     assert {'enabled': True} in uinfo
-    ugroups = [
-        elem for elem in uinfo if tuple(elem.keys()) == ('groups')
-    ][0]['groups']
-    assert 'admin' in ugroups
+    assert {'groups': ['admin']} in uinfo
     assert {'quota': 'none'} in uinfo
 
 def test_upload():
@@ -95,9 +93,11 @@ def test_upload_survives():
     assert response.ok
     assert response.content == b"Test text text that tests."
     check_call(
-        "docker-compose down && docker volume prune -y && docker-compose up -d"
+        "docker-compose down && docker volume prune -f"
+        + "&& docker-compose up -d",
+        shell=True
     )
-    sleep(15)
+    sleep(20)
     response = get(
         url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
             url, user['user_id']
