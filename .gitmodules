@@ -1,0 +1,3 @@
+[submodule "deployments/resume/webroot"]
+	path = deployments/resume/webroot
+	url = https://github.com/dscottboggs/minimal-resume
