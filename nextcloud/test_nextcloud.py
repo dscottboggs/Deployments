@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-from requests import get
-from misc     import client, occ
-from yaml     import load
+from requests   import get, put, delete
+from misc       import client, occ
+from yaml       import load
+from first_run  import user_info
+from time       import sleep
 
 
 def test_index():
@@ -37,3 +39,77 @@ def test_user():
     ][0]['groups']
     assert 'admin' in ugroups
     assert {'quota': 'none'} in uinfo
+
+def test_upload():
+    """Test that uploading a file works.
+
+    This test uses the backend WebDAV REST api and hence contains no
+    checks for the actual GUI interface.
+    """
+    user = user_info['admin'][0]
+    url = "s.cloud.tams.tech"
+    response = put(
+        url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
+            url, user['user_id']
+        ),
+        auth=(user['user_id'], user['password']),
+        data=b"Test text text that tests."
+    )
+    assert response.ok
+    response = get(
+        url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
+            url, user['user_id']
+        ),
+        auth=(user['user_id'], user['password'])
+    )
+    assert response.ok
+    assert response.content == b"Test text text that tests."
+    response = delete(
+        url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
+            url, user['user_id']
+        ),
+        auth=(user['user_id'], user['password'])
+    )
+    assert response.ok
+
+
+
+def test_upload_survives():
+    """Test that an uploaded file survives container destruction."""
+    user = user_info['admin'][0]
+    url = "s.cloud.tams.tech"
+    response = put(
+        url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
+            url, user['user_id']
+        ),
+        auth=(user['user_id'], user['password']),
+        data=b"Test text text that tests."
+    )
+    assert response.ok
+    response = get(
+        url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
+            url, user['user_id']
+        ),
+        auth=(user['user_id'], user['password'])
+    )
+    assert response.ok
+    assert response.content == b"Test text text that tests."
+    check_call(
+        "docker-compose down && docker volume prune -y && docker-compose up -d"
+    )
+    sleep(15)
+    response = get(
+        url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
+            url, user['user_id']
+        ),
+        auth=(user['user_id'], user['password'])
+    )
+    assert response.ok
+    assert response.content == b"Test text text that tests."
+    response = delete(
+        url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
+            url, user['user_id']
+        ),
+        auth=(user['user_id'], user['password'])
+    )
+    assert response.ok
