@@ -43,12 +43,10 @@ class BasicRsyncBackup:
 
     def archive(self):
         """Put the folder in a gzipped tar archive."""
-        with TarFile.open(
-                    "%(backup)s/%(t)s.tar.gz" % {
-                        'backup': self.backup_dir, 't': self.now
-                    },
-                    mode='x:gz'     # Raises an exception if file exists, open
-                ) as tarchive:      # as gzipped file for writing.
+        archive_location = "%s/%s.tar.gz" % self.backup_dir, self.now
+        if access(archive_location, file_exists):
+            raise OSError("%s already exists!" % archive_location)
+        with TarFile.open(archive_location, mode='w:gz') as tarchive:
             tarchive.add(self.stage)
 
 
