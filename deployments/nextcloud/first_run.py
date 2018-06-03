@@ -5,12 +5,9 @@ from yaml       import load, dump
 from json       import loads, dumps
 from subprocess import check_call
 from time       import sleep
-from misc       import TerminalOutputModifiers, occ, client
+from nextcloud  import occ, client, font
 from os         import execlp                                  as switch_to_cmd
 
-font   = TerminalOutputModifiers()
-with open(u"user.yml", u'r') as uInfo_file:
-    user_info = load(uInfo_file)
 
 example_users = [
     {

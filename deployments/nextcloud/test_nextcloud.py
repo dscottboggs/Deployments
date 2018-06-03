@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 from requests   import get, put, delete
-from misc       import client, occ
 from yaml       import load
-from first_run  import user_info
+from nextcloud  import user_info, client, occ
 from time       import sleep
 from subprocess import check_call
 
