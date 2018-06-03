@@ -12,6 +12,24 @@ font   = TerminalOutputModifiers()
 with open(u"user.yml", u'r') as uInfo_file:
     user_info = load(uInfo_file)
 
+example_users = [
+    {
+        "display_name": "Full Name",
+        "user_id":      "sign_in_name",
+        "email":        "email@address.com",
+        "password":     "random-pa$sw0rd",
+    }, {
+        "display_name": "Optional second admin"
+        "user_id": "not_required"
+        "email": "but_perfectly@valid.com"
+        "password": "delete_if_not_used"
+    }, {
+        "display_name": "Same format"
+        "user_id": "as_above"
+        "email": "you@get.the"
+        "password": "idea.jpg"
+    }
+]
 
 class ContainerDidNotStartException(Exception): pass
 
@@ -68,6 +86,10 @@ def compose():
 
 def install_nextcloud(nextcloud_container):
     assert nextcloud_container.status == u"running"
+    assert user_info[u'database'] != 'password'
+    assert "localhost" not in user_info[u'urls'], \
+        "Since this process automates SSL verification, you must use a valid"\
+        + "URL."
     if not occ(
                 None,
                 "maintenance:install",
@@ -79,7 +101,7 @@ def install_nextcloud(nextcloud_container):
                 '--admin-user="%s"' % user_info[u'admin'][0][u'user_id'],
                 '--admin-pass="%s"' % user_info[u'admin'][0][u'password']
             ):
-        print "Install command failed."
+        print("Install command failed.")
         exit(1)
     check_call(u'docker-compose down && docker-compose up -d', shell=True)
     return client.containers.list(
@@ -95,13 +117,23 @@ def set_trusted_domains(nextcloud_container):
         "sed -i s/localhost/%s/ config/config.php" % user_info['urls'][0]
     )
     if cmd_output.exit_code:
-        print "Error running the command to update the config:"
-        print cmd_output.output
+        print("Error running the command to update the config:")
+        print(cmd_output.output)
         exit(cmd_output.exit_code)
 
 def setup_users():
     """Set up the info for each user specified in the user.yml file."""
     for admin in user_info['admin']:
+        for key in admin.keys():
+            for example_user in example_users:
+                if admin[key] == example_user[key]:
+                    raise ValueError(
+                        "%s still uses the default value for %s; %s==%s",
+                        admin['display_name'],
+                        key,
+                        admin[key],
+                        example_user[key]
+                    )
         if not occ(None, "user:info", admin['user_id']):
             occ(
                 {"OC_PASS": admin['password']},
@@ -114,6 +146,16 @@ def setup_users():
                 % admin['display_name']
     if user_info.get('others'):
         for user in user_info.get('others'):
+            for key in user.keys():
+                for example_user in example_users:
+                    if user[key] == example_user[key]:
+                        raise ValueError(
+                            "%s still uses the default value for %s; %s==%s",
+                            user['display_name'],
+                            key,
+                            user[key],
+                            example_user[key]
+                        )
             if not occ(None, "user:info", user['user_id']):
                 occ(
                     {"OC_PASS": user['password']},
