@@ -2,7 +2,7 @@
 from subprocess import check_call
 from datetime   import datetime
 from tarfile    import TarFile
-from os         import makedirs, access, F_OK as file_exists
+from os         import makedirs, access, F_OK as file_exists, getcwd, chdir
 from os.path    import isdir
 
 
@@ -46,8 +46,11 @@ class BasicRsyncBackup:
         archive_location = "%s/%s.tar.gz" % (self.backup_dir, self.now)
         if access(archive_location, file_exists):
             raise OSError("%s already exists!" % archive_location)
+        pwd = getcwd()
+        chdir(self.stage)
         with TarFile.open(archive_location, mode='w:gz') as tarchive:
-            tarchive.add(self.stage)
+            tarchive.add('.')
+        chdir(pwd)
 
 
 class BackupReverseProxy(BasicRsyncBackup):
