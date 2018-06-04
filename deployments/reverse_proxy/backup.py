@@ -4,6 +4,7 @@ from datetime   import datetime
 from tarfile    import TarFile
 from os         import makedirs, access, F_OK as file_exists, getcwd, chdir
 from os.path    import isdir
+from shutil     import rmtree
 
 
 class BasicRsyncBackup:
@@ -40,6 +41,15 @@ class BasicRsyncBackup:
             },
             shell=True
         )
+
+    def delete_stage(self):
+        """Delete the staging folder"""
+        def raise_exception(func, path, info):
+            raise OSError(
+                "Problem removing directory/file %s. Useful info, maybe?\n%s"
+                % (path, info)
+            )
+        return rmtree(self.stage, onerror=raise_exception)
 
     def archive(self):
         """Put the folder in a gzipped tar archive."""
