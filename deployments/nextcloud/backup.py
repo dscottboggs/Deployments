@@ -22,6 +22,6 @@ class BackupNextcloud(BasicRsyncBackup):
         self.backup_database()
         super().do_backup()
 
-    def backup_database():
+    def backup_database(self):
         """Get a dump from the database and store it in the staging area."""
         self.container.exec_run()

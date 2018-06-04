@@ -1,0 +1,27 @@
+[Unit]
+Description=Companion to the reverse proxy to get LetsEncrypt certs
+Documentation=https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion
+After=network.target docker.socket reverse_proxy.service
+Requires=docker.socket reverse_proxy.service
+
+[Service]
+RestartSec=10
+Restart=Always
+
+ExecStartPre=-/usr/bin/docker pull jrcs/letsencrypt-nginx-proxy-companion:latest
+ExecStartPre=-/usr/bin/docker rm -f systemd_reverse_proxy_letsencrypt
+
+ExecStart=/usr/bin/docker run                               \
+          --name systemd_reverse_proxy_letsencrypt          \
+          -v /var/run/docker.sock:/var/run/docker.sock:ro   \
+          --volumes-from systemd_reverse_proxy              \
+          --network systemd_reverse_proxy_net               \
+          jrcs/letsencrypt-nginx-proxy-companion:latest
+
+ExecStop=/usr/bin/docker stop  systemd_reverse_proxy && \
+         /usr/bin/docker rm -f systemd_reverse_proxy
+
+KillMode=/usr/bin/docker kill  systemd_reverse_proxy && \
+         /usr/bin/docker rm -f systemd_reverse_proxy
+
+TimeoutStartSec=infinity

@@ -1,0 +1,36 @@
+[Unit]
+Description=Automatically generated nginx reverse proxy
+Documentation=https://github.com/jwilder/nginx-proxy
+After=network.target docker.socket
+Requires=docker.socket
+
+[Service]
+RestartSec=10
+Restart=Always
+
+ExecStartPre=-/usr/bin/docker pull jwilder/nginx-proxy:latest
+ExecStartPre=-/usr/bin/docker rm -f systemd_reverse_proxy
+ExecStartPre=-/usr/bin/docker network rm systemd_reverse_proxy_net
+ExecStartPre=/usr/bin/docker network create systemd_reverse_proxy_net
+ExecStartPre=/usr/bin/mkdir -p                       \
+             /docker/reverse_proxy/mounts/vhost.d    \
+             /docker/reverse_proxy/mounts/certs      \
+             /docker/reverse_proxy/mounts/webroot
+
+ExecStart=/usr/bin/docker run                                       \
+    --name systemd_reverse_proxy                                    \
+    -p 80:80 -p 443:443                                             \
+    -v /var/run/docker.sock:/tmp/docker.sock:ro                     \
+    -v /docker/reverse_proxy/mounts/vhost.d:/etc/nginx/vhost.d      \
+    -v /docker/reverse_proxy/mounts/certs:/etc/nginx/certs          \
+    -v /docker/reverse_proxy/mounts/webroot:/usr/share/nginx/html   \
+    --network systemd_reverse_proxy_net                             \
+    jwilder/nginx-proxy
+
+TimeoutStartSec=infinity
+
+ExecStop=/usr/bin/docker stop  systemd_reverse_proxy && \
+         /usr/bin/docker rm -f systemd_reverse_proxy
+
+KillMode=/usr/bin/docker kill  systemd_reverse_proxy && \
+         /usr/bin/docker rm -f systemd_reverse_proxy
