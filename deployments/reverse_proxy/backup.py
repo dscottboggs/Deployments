@@ -20,13 +20,19 @@ class BackupReverseProxy(BasicRsyncBackup):
 def main():
     """Code to execute this file as a script."""
     backup = BackupReverseProxy()
-    backup.do_backup()
-    if "--no-cronjob" not in argv:
+    if "--no-cronjob" in argv:
         # setup cron job
-        with open("/etc/cron.weekly/backup_reverse_proxy.sh", 'w') as cronjob:
-            cronjob.write(
-                "#!/bin/sh\npython %s --no-cronjob" % abspath(__file__)
-            )
+        freq = None
+    else:
+        if '--freq=hourly' in argv:
+            freq = 'hourly'
+        if '--freq=daily' in argv:
+            freq = 'daily'
+        if '--freq=monthly' in argv:
+            freq = 'monthly'
+        else:
+            freq = 'weekly'
+    backup.do_backup(freq, abspath(__file__))
 
 
 if __name__ == '__main__':

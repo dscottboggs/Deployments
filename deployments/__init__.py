@@ -2,7 +2,7 @@
 from subprocess import check_call
 from tarfile    import TarFile
 from os         import makedirs, access, F_OK as file_exists, getcwd, chdir
-from os.path    import isdir
+from os.path    import isdir, abspath
 from shutil     import rmtree
 from misc       import TerminalOutputModifiers
 from docker     import DockerClient
@@ -30,12 +30,14 @@ class BasicRsyncBackup:
             raise OSError("%s is a file but we need a folder there." % folder)
         makedirs(folder)
 
-    def do_backup(self):
+    def do_backup(self, cronjob_freq=None, backup_script=None):
         """Perform each step in the backup procedure."""
         self.prep_folder(self.backup_dir)
         self.prep_folder(self.stage)
         self.copy_files_to_stage()
         self.archive()
+        if cronjob_freq:
+            self.setup_cronjob(cronjob_freq, backup_script)
 
     def copy_files_to_stage(self):
         """Copy the files themselves and their attrs to a staging area."""
@@ -66,3 +68,15 @@ class BasicRsyncBackup:
         with TarFile.open(archive_location, mode='w:gz') as tarchive:
             tarchive.add('.')
         chdir(pwd)
+
+    def setup_cronjob(self, frequency, backup_script):
+        """Save this script to the cron.{frequency} folder.
+
+        `frequency` must be "weekly", "monthly", "daily", or "hourly".
+        """
+        with open(
+                    "/etc/cron.%s/backup_reverse_proxy.sh" % frequency, 'w'
+                ) as cronjob:
+            cronjob.write(
+                "#!/bin/sh\npython %s --no-cronjob" % backup_script
+            )
