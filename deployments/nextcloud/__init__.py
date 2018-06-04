@@ -3,12 +3,11 @@
 See README for usage.
 """
 from docker import DockerClient
-from misc   import TerminalOutputModifiers
-client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
 
-font   = TerminalOutputModifiers()
+
 with open(u"user.yml", u'r') as uInfo_file:
     user_info = load(uInfo_file)
+
 
 def occ(environment, *cmdargs):
     """Execute the `php occ` command in the container.
