@@ -1,8 +1,8 @@
-from subprocess                         import check_call
-from os.path                            import abspath, dirname, join
-from time                               import sleep
-from deployments.reverse_proxy.backup   import BackupReverseProxy
-from pytest                             import main as pytest
+from subprocess             import check_call
+from os.path                import abspath, dirname, join
+from time                   import sleep
+from reverse_proxy.backup   import BackupReverseProxy
+from pytest                 import main as pytest
 
 
 def run_tests_at(filepath):
@@ -24,7 +24,7 @@ def bring_up_service_at(filepath):
 
 def setup_nextcloud():
     """Setup the nextcloud service."""
-    from deployments.nextcloud.backup import BackupNextcloud
+    from nextcloud.backup import BackupNextcloud
     nextcloud_dir = join(abspath(dirname(__file__)), "nextcloud")
     bring_up_service_at(nextcloud_dir)
     sleep(30)
