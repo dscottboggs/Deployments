@@ -1,4 +1,5 @@
 from docker import DockerClient
+from os.path import join, abspath, dirname
 client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
 
 class TerminalOutputModifiers:
@@ -142,3 +143,41 @@ def occ(environment, *cmdargs):
         return False
     else:
         return result.output
+
+
+def _get_wordlist():
+    """Internal function, for random_words()
+
+    Returns a list of words, gathered form words.txt or freebsd.org"""
+    wordlist = []
+    try:
+        with open(
+                    join(abspath(dirname(__file__)), "list_of_words.txt"),
+                    'r'
+                ) as wordlistfile:
+            wordlist = [word.strip('\n') for word in wordlistfile.readlines()]
+    except FileNotFoundError:
+        response = requests.get("http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain")
+        wordlist = response.text.split('\n')
+        with open("words.txt", 'w') as wordlistfile:
+            wordlistfile.writelines(
+                [word + '\n' for word in wordlist]
+            )
+    return wordlist
+
+
+def random_words(num, sep="_"):
+    """
+    Generate `num` random words, separated by `sep`.
+
+    sep defaults to _
+    """
+    result = ""
+
+    wordlist = _get_wordlist()
+    while num:
+        num -= 1
+        result += wordlist[random.randrange(len(wordlist))]
+        if num:
+            result += sep
+    return result
