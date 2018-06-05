@@ -4,11 +4,15 @@ from os                                 import R_OK as file_is_readable
 from os.path                            import abspath, dirname, join
 from time                               import sleep
 from deployments.reverse_proxy.backup   import BackupReverseProxy
+from deployments.misc                   import random_words
 from pytest                             import main as pytest
 from sys                                import stdout
-
+from re                                 import search, fullmatch
+from getpass                            import getpass
+from yaml                               import dump; help(dump)
 
 THIS_DIR = dirname(abspath(__file__))
+help(search)
 
 
 def ask_for_admin_user():
@@ -16,20 +20,51 @@ def ask_for_admin_user():
     if access(
                 join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
                 file_exists
+            ) and not access(
+                join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
+                file_is_readable
             ):
-        if access(
-                    join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
-                    file_is_readable
-                ):
-            ...  # TODO: return value?
-        else:
-            raise OSError(
-                "I don't have access to %s." % join(
-                    THIS_DIR, "deployments", "nextcloud", "user.yml"
-                )
+        raise OSError(
+            "I don't have access to %s." % join(
+                THIS_DIR, "deployments", "nextcloud", "user.yml"
             )
+        )
     else:
-        
+        display_name    = input  ("What's your full name?    ")
+        user_id         = input  ("Pick a unique user ID:    ")
+        assert not search(r'\W', user_id), \
+            "User ID can only contain alphanumeric characters and _"
+        email           = input  ("What's your email?        ")
+        assert fullmatch(r'\w[\w\.-]*\w@\w[\w\.-]*\w\.\w[\w\.]*\w', email),\
+            "Please enter a valid email."
+        print("Pick an account password, or leave this blank to get a")
+        password        = getpass("generated one:            ")
+        if not password:
+            password = random_words(3)
+        db_password     = random_words(3)
+        site_url        = input  ("What's the nextcloud URL? ")
+        assert fullmatch(r'\w[\w\.-]*\w', site_url),\
+            "Please enter a valid URL."
+        assert not fullmatch(r'https?://.*', site_url), \
+            "Don't specify the protocol."
+        with open(
+                    THIS_DIR, "deployments", "nextcloud", "user.yml", 'w'
+                ) as user_file:
+            dump(
+                {
+                    'admin': [
+                        {
+                            'display_name': display_name,
+                            'user_id': user_id,
+                            'email': email,
+                            'password': password,
+                        }
+                    ],
+                    "database": db_password,
+                    "urls": [site_url]
+                },
+                user_file
+            )
 
 
 def run_tests_at(filepath):
