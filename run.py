@@ -1,6 +1,7 @@
 from subprocess                         import check_call
 from os                                 import access, F_OK as file_exists
 from os                                 import R_OK as file_is_readable
+from os                                 import environ
 from os.path                            import abspath, dirname, join
 from time                               import sleep
 from deployments.reverse_proxy.backup   import BackupReverseProxy
@@ -65,6 +66,26 @@ def ask_for_admin_user():
                 },
                 user_file
             )
+        with open(
+                    join(
+                        THIS_DIR, "deployments", "nextcloud", "user.yml"
+                    ), 'w'
+                ) as user_file:
+            print(
+                  "I've stored the following under nextcloud/user.yml:\n"
+                + user_file.read()
+            )
+        response = input("Would you like to edit the user config? (y/N)  ")
+        if response.lower()[0] == "y":
+            if environ.get('EDITOR'):
+                check_call("%s %s" % (
+                    environ.get('EDITOR'),
+                    join(THIS_DIR, "deployments", "nextcloud", "user.yml")
+                ), shell=True)
+            else:
+                check_call("nano %s" % join(
+                    THIS_DIR, "deployments", "nextcloud", "user.yml"
+                ), shell=True)
 
 
 def run_tests_at(filepath):
