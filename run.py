@@ -1,7 +1,7 @@
 from subprocess                         import check_call
 from os                                 import access, F_OK as file_exists
 from os                                 import R_OK as file_is_readable
-from os                                 import environ
+from os                                 import environ, getuid, getgid
 from os.path                            import abspath, dirname, join
 from time                               import sleep
 from deployments.reverse_proxy.backup   import BackupReverseProxy
@@ -10,10 +10,9 @@ from pytest                             import main as pytest
 from sys                                import stdout
 from re                                 import search, fullmatch
 from getpass                            import getpass
-from yaml                               import dump; help(dump)
+from yaml                               import dump
 
 THIS_DIR = dirname(abspath(__file__))
-help(search)
 
 
 def ask_for_admin_user():
@@ -104,6 +103,7 @@ def bring_up_service_at(filepath):
         shell=True
     )
 
+
 def wait(time=10, msg=None, sep=" -- "):
     """Display a message for a while."""
     while time:     # (remains)
@@ -171,6 +171,13 @@ def setup_reverse_proxy():
 
 
 def main():
+    if not (getuid() == 0 and getgid() == 0):
+        print(
+            "This application is intended to be run as root. I would "
+            "recommend using a virtual machine for the server, but there's "
+            "no reason you can't just run `sudo python run.py`."
+        )
+        exit(1)
     setup_reverse_proxy()
     setup_resume()
     setup_nextcloud()
