@@ -25,7 +25,11 @@ def bring_up_service_at(filepath):
 def setup_nextcloud():
     """Setup the nextcloud service."""
     from deployments.nextcloud.backup import BackupNextcloud
-    nextcloud_dir = join(abspath(dirname(__file__)), "nextcloud")
+    nextcloud_dir = join(
+        abspath(dirname(__file__)),
+        "deployments",
+        "nextcloud"
+    )
     bring_up_service_at(nextcloud_dir)
     sleep(30)
     run_tests_at(nextcloud_dir)
@@ -37,7 +41,11 @@ def setup_nextcloud():
 
 def setup_resume():
     """Setup my resume site."""
-    resume_filepath = join(abspath(dirname(__file__)), "resume")
+    resume_filepath = join(
+        abspath(dirname(__file__)),
+        "deployments",
+        "resume"
+    )
     bring_up_service_at(resume_filepath)
     sleep(30)   # allow service to start and letsencrypt service to run
     run_tests_at(resume_filepath)
@@ -47,14 +55,16 @@ def setup_resume():
 
 def setup_reverse_proxy():
     """Setup the reverse proxy containers."""
-    reverse_proxy_path = join(abspath(dirname(__file__)), "reverse_proxy")
+    reverse_proxy_path = join(
+        abspath(dirname(__file__)),
+        "deployments",
+        "reverse_proxy"
+    )
     bring_up_service_at(reverse_proxy_path)
     sleep(10)   # to give the containers time to get ready.
     run_tests_at(reverse_proxy_path)
     backup = BackupReverseProxy()
-    backup.do_backup('weekly', join(
-        abspath(dirname(__file__)), "reverse_proxy", "backup.py"
-    ))
+    backup.do_backup('weekly', join(reverse_proxy_path, "backup.py"))
     # ^^ nothing to back up yet, this is to install the cronjob
 
 
