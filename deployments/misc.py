@@ -1,5 +1,7 @@
-from docker import DockerClient
-from os.path import join, abspath, dirname
+from docker     import DockerClient
+from os.path    import join, abspath, dirname
+from requests   import get
+from random     import randrange
 client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
 
 class TerminalOutputModifiers:
@@ -155,16 +157,19 @@ def _get_wordlist():
                     join(abspath(dirname(__file__)), "list_of_words.txt"),
                     'r'
                 ) as wordlistfile:
-            wordlist = [word.strip('\n') for word in wordlistfile.readlines()]
+            wordlist = map(
+                lambda word: word.strip('\n'),
+                wordlistfile.readlines()
+            )
     except IOError:
-        response = requests.get("http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain")
+        response = get("http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain")
         wordlist = response.text.split('\n')
         with open("words.txt", 'w') as wordlistfile:
-            wordlistfile.writelines(
-                [word + '\n' for word in wordlist]
-            )
+            wordlistfile.writelines(wordlist)
     return wordlist
 
+with open('test.txt', 'w') as tf:
+    tf.writelines(["line1", "line2", "line3"])
 
 def random_words(num, sep="_"):
     """
@@ -177,7 +182,7 @@ def random_words(num, sep="_"):
     wordlist = _get_wordlist()
     while num:
         num -= 1
-        result += wordlist[random.randrange(len(wordlist))]
+        result += wordlist[randrange(len(wordlist))]
         if num:
             result += sep
     return result
