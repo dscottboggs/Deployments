@@ -11,12 +11,14 @@ Restart=Always
 ExecStartPre=-/usr/bin/docker pull jrcs/letsencrypt-nginx-proxy-companion:latest
 ExecStartPre=-/usr/bin/docker rm -f systemd_reverse_proxy_letsencrypt
 
-ExecStart=/usr/bin/docker run                               \
-          --name systemd_reverse_proxy_letsencrypt          \
-          -v /var/run/docker.sock:/var/run/docker.sock:ro   \
-          --volumes-from systemd_reverse_proxy              \
-          --network systemd_reverse_proxy_net               \
-          jrcs/letsencrypt-nginx-proxy-companion:latest
+ExecStart=/usr/bin/docker run \
+    --name systemd_reverse_proxy_letsencrypt \
+    -v /var/run/docker.sock:/var/run/docker.sock:ro \
+    --volumes-from systemd_reverse_proxy \
+    --network systemd_reverse_proxy_net \
+    --env 'ACME_CA_URI=https://acme-staging.api.letsencrypt.org/directory' \
+    --link systemd_reverse_proxy \
+    jrcs/letsencrypt-nginx-proxy-companion:latest
 
 ExecStop=/usr/bin/docker stop  systemd_reverse_proxy && \
          /usr/bin/docker rm -f systemd_reverse_proxy
