@@ -2,7 +2,7 @@
 from subprocess import check_call
 from tarfile    import TarFile
 from os         import makedirs, access, F_OK as file_exists, getcwd, chdir
-from os.path    import isdir, abspath
+from os.path    import isdir
 from shutil     import rmtree
 from misc       import TerminalOutputModifiers
 from docker     import DockerClient
