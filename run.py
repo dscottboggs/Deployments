@@ -42,7 +42,7 @@ def ask_for_admin_user():
         if not password:
             password = random_words(3)
         db_password     = random_words(3)
-        site_url        = input  ("What's the nextcloud URL? ")
+        site_url        = raw_input("What's the nextcloud URL? ")
         assert match(r'^\w[\w\.-]*\w$', site_url),\
             "Please enter a valid URL."
         assert not match(r'^https?://', site_url), \
