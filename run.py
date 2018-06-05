@@ -47,9 +47,9 @@ def ask_for_admin_user():
             "Please enter a valid URL."
         assert not match(r'^https?://', site_url), \
             "Don't specify the protocol."
-        with open(
-                    THIS_DIR, "deployments", "nextcloud", "user.yml", 'w'
-                ) as user_file:
+        with open(join(
+                    THIS_DIR, "deployments", "nextcloud", "user.yml"
+                ), 'w') as user_file:
             dump(
                 {
                     'admin': [
