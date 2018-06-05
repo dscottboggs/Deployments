@@ -156,7 +156,7 @@ def _get_wordlist():
                     'r'
                 ) as wordlistfile:
             wordlist = [word.strip('\n') for word in wordlistfile.readlines()]
-    except FileNotFoundError:
+    except IOError:
         response = requests.get("http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain")
         wordlist = response.text.split('\n')
         with open("words.txt", 'w') as wordlistfile:
