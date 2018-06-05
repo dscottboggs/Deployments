@@ -11,8 +11,6 @@ from sys                                import stdout
 from re                                 import search, match
 from getpass                            import getpass
 from yaml                               import dump
-from urlparse                           import urlparse
-
 
 THIS_DIR = dirname(abspath(__file__))
 
@@ -40,19 +38,15 @@ def ask_for_admin_user():
         assert match(r'^\w[\w\.\-]*\w@\w[\w\.\-]*\w\.\w[\w\.]*\w$', email),\
             "Please enter a valid email."
         print("Pick an account password, or leave this blank to get a")
-        password        = getpass("randomly generated one:   ")
+        password        = getpass("generated one:            ")
         if not password:
             password = random_words(3)
         db_password     = random_words(3)
-        site_url        = raw_input("What's the nextcloud URL? ")
-        url_check       = urlparse(site_url)
-        if url_check.netloc != site_url:
-            if raw_input(
-                        "Using %s for URL, ok? (Y/n)  " % url_check.netloc
-                    ).lower()[0] == 'n':
-                exit(1000)
-            else:
-                site_url = url_check.netloc
+        site_url        = input  ("What's the nextcloud URL? ")
+        assert match(r'^\w[\w\.-]*\w$', site_url),\
+            "Please enter a valid URL."
+        assert not match(r'^https?://', site_url), \
+            "Don't specify the protocol."
         with open(
                     THIS_DIR, "deployments", "nextcloud", "user.yml", 'w'
                 ) as user_file:
