@@ -42,7 +42,7 @@ class BasicRsyncBackup:
     def copy_files_to_stage(self):
         """Copy the files themselves and their attrs to a staging area."""
         check_call(
-            "rsync -aqX --partial %(rpd)s/mounts/ %(dest)s"
+            "rsync -aqX --partial %(rpd)s/ %(dest)s"
             % {
                 'rpd': self.source_dir, 'dest': self.stage
             },
