@@ -7,9 +7,8 @@ def get_containers():
     return [c.name for c in cli.containers.list()]
 
 def test_reverse_proxy():
-    assert "reverseproxy_nginx-proxy_1" in get_containers()
+    assert "reverse_proxy_nginx-proxy_1" in get_containers()
 
 def test_companion():
-    assert "reverseproxy_letsencrypt-nginx-proxy-companion_1"\
+    assert "reverse_proxy_letsencrypt-nginx-proxy-companion_1"\
         in get_containers()
-
