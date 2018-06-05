@@ -33,7 +33,7 @@ def setup_nextcloud():
     ))
 
 
-def setup_resume(self):
+def setup_resume():
     """Setup my resume site."""
     from deployments.resume.test_resume import test_requests, test_disallowed
     bring_up_service_at(join(abspath(dirname(__file__)), "resume"))
@@ -44,7 +44,7 @@ def setup_resume(self):
     backup.do_backup()
 
 
-def setup_reverse_proxy(self):
+def setup_reverse_proxy():
     """Setup the reverse proxy containers."""
     from deployments.reverse_proxy.test_reverse_proxy import test_companion
     from deployments.reverse_proxy.test_reverse_proxy import test_reverse_proxy
