@@ -33,10 +33,12 @@ class BackupNextcloud(BasicRsyncBackup):
         with open(join(self.stage, "database.dump"), 'w') as dumpfile:
             dumpfile.write(dump_result.output)
 
+
 def main():
     """The main entrypoint of the backup script if it's run alone."""
     backup = BackupNextcloud()
     backup.do_backup('daily', abspath(__file__))
+
 
 if __name__ == '__main__':
     main()

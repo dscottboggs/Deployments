@@ -16,7 +16,7 @@ def bring_up_service_at(filepath):
 def setup_nextcloud():
     """Setup the nextcloud service."""
     from deployments.nextcloud.backup           import  BackupNextcloud
-    from deployments.nextcloud.test_nextcloud   import  test_user, test_index \
+    from deployments.nextcloud.test_nextcloud   import  test_user, test_index,\
                                                         test_upload,          \
                                                         test_upload_survives
     bring_up_service_at(join(abspath(dirname(__file__)), "nextcloud"))
