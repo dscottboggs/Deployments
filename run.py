@@ -3,6 +3,7 @@ from os.path                            import abspath, dirname, join
 from time                               import sleep
 from deployments.reverse_proxy.backup   import BackupReverseProxy
 from pytest                             import main as pytest
+from sys                                import stdout
 
 
 def run_tests_at(filepath):
@@ -21,6 +22,18 @@ def bring_up_service_at(filepath):
         shell=True
     )
 
+def wait(time=10, msg=None, sep=" -- "):
+    """Display a message for a while."""
+    while time:     # (remains)
+        if msg:
+            stdout.write("%s%s%d seconds.    \r" % ( msg, sep, time))
+            stdout.flush()
+        else:
+            stdout.write("Wait %d seconds.    \r" % time)
+            stdout.flush()
+        time -= 1
+        sleep(1)
+
 
 def setup_nextcloud():
     """Setup the nextcloud service."""
@@ -31,7 +44,11 @@ def setup_nextcloud():
         "nextcloud"
     )
     bring_up_service_at(nextcloud_dir)
-    sleep(30)
+    wait(30,
+        msg="Unfortunately, the reverse proxy generation and letsencrypt "
+            "setup takes some time, including an actual timer. Please wait ",
+        sep=""
+    )
     run_tests_at(nextcloud_dir)
     brp = BackupReverseProxy()
     bnc = BackupNextcloud()
@@ -47,7 +64,11 @@ def setup_resume():
         "resume"
     )
     bring_up_service_at(resume_filepath)
-    sleep(30)   # allow service to start and letsencrypt service to run
+    wait(30,
+        msg="Unfortunately, the reverse proxy generation and letsencrypt "
+            "setup takes some time, including an actual timer. Please wait ",
+        sep=""
+    )
     run_tests_at(resume_filepath)
     backup = BackupReverseProxy()
     backup.do_backup()
@@ -61,7 +82,6 @@ def setup_reverse_proxy():
         "reverse_proxy"
     )
     bring_up_service_at(reverse_proxy_path)
-    sleep(10)   # to give the containers time to get ready.
     run_tests_at(reverse_proxy_path)
     backup = BackupReverseProxy()
     backup.do_backup('weekly', join(reverse_proxy_path, "backup.py"))

@@ -1,5 +1,5 @@
 from datetime       import datetime
-from os.path        import abspath
+from os.path        import abspath, dirname, join
 from sys            import argv
 from deployments    import BasicRsyncBackup
 
@@ -7,7 +7,10 @@ from deployments    import BasicRsyncBackup
 class BackupReverseProxy(BasicRsyncBackup):
     """Methods for backing up the reverse proxy mounts."""
     backup_dir = "/backup/reverse_proxy"
-    source_dir = '.'
+    source_dir = join(
+        abspath(dirname(__file__)),
+        "mounts"
+    )
 
     def __init__(self):
         """Initialize variables needed for all methods."""
