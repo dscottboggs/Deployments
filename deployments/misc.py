@@ -165,11 +165,11 @@ def _get_wordlist():
         response = get("http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain")
         wordlist = response.text.split('\n')
         with open("words.txt", 'w') as wordlistfile:
-            wordlistfile.writelines(wordlist)
+            wordlistfile.writelines(
+                map(lambda word: word + '\n', wordlist)
+            )
     return wordlist
 
-with open('test.txt', 'w') as tf:
-    tf.writelines(["line1", "line2", "line3"])
 
 def random_words(num, sep="_"):
     """
