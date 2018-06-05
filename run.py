@@ -6,6 +6,10 @@ from pytest                             import main as pytest
 from sys                                import stdout
 
 
+def ask_for_admin_user():
+    """Request input for user details."""
+
+
 def run_tests_at(filepath):
     """Run pytest on the tests stored in filepath.
 
