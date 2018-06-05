@@ -125,12 +125,15 @@ def wait(time=10, msg=None, sep=" -- "):
 
 def setup_nextcloud():
     """Setup the nextcloud service."""
+    ask_for_admin_user()
+    from deployments.nextcloud.first_run import main as install_nextcloud
     from deployments.nextcloud.backup import BackupNextcloud
     nextcloud_dir = join(
         THIS_DIR,
         "deployments",
         "nextcloud"
     )
+    install_nextcloud()
     bring_up_service_at(nextcloud_dir)
     wait(30,
         msg="Unfortunately, the reverse proxy generation and letsencrypt "

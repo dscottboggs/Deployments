@@ -16,17 +16,18 @@ example_users = [
         "email":        "email@address.com",
         "password":     "random-pa$sw0rd",
     }, {
-        "display_name": "Optional second admin"
-        "user_id": "not_required"
-        "email": "but_perfectly@valid.com"
+        "display_name": "Optional second admin",
+        "user_id": "not_required",
+        "email": "but_perfectly@valid.com",
         "password": "delete_if_not_used"
     }, {
-        "display_name": "Same format"
-        "user_id": "as_above"
-        "email": "you@get.the"
+        "display_name": "Same format",
+        "user_id": "as_above",
+        "email": "you@get.the",
         "password": "idea.jpg"
     }
 ]
+
 
 class ContainerDidNotStartException(Exception): pass
 
