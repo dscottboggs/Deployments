@@ -1,4 +1,6 @@
 from subprocess                         import check_call
+from os                                 import access, F_OK as file_exists
+from os                                 import R_OK as file_is_readable
 from os.path                            import abspath, dirname, join
 from time                               import sleep
 from deployments.reverse_proxy.backup   import BackupReverseProxy
@@ -6,8 +8,28 @@ from pytest                             import main as pytest
 from sys                                import stdout
 
 
+THIS_DIR = dirname(abspath(__file__))
+
+
 def ask_for_admin_user():
     """Request input for user details."""
+    if access(
+                join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
+                file_exists
+            ):
+        if access(
+                    join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
+                    file_is_readable
+                ):
+            ...  # TODO: return value?
+        else:
+            raise OSError(
+                "I don't have access to %s." % join(
+                    THIS_DIR, "deployments", "nextcloud", "user.yml"
+                )
+            )
+    else:
+        
 
 
 def run_tests_at(filepath):
@@ -43,7 +65,7 @@ def setup_nextcloud():
     """Setup the nextcloud service."""
     from deployments.nextcloud.backup import BackupNextcloud
     nextcloud_dir = join(
-        abspath(dirname(__file__)),
+        THIS_DIR,
         "deployments",
         "nextcloud"
     )
