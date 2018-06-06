@@ -60,12 +60,15 @@ def occ(environment, *cmdargs):
             )
     result = container.exec_run(cmd, user="www-data")
     if result.exit_code:
-        print "ERROR while running the following command in the"
-        print "nextcloud container:"
-        print cmd
-        print "The command output the following:"
-        print result.output
-        print "and executed with the code %d." % result.exit_code
+        print(
+            "ERROR while running the following command in the",
+            "nextcloud container:",
+            cmd,
+            "The command output the following:",
+            result.output,
+            "and executed with the code %d." % result.exit_code,
+            sep='\n'
+        )
         return False
     else:
         return result.output

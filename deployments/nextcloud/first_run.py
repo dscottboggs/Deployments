@@ -102,6 +102,7 @@ def set_trusted_domains(nextcloud_container):
         print(cmd_output.output)
         exit(cmd_output.exit_code)
 
+
 def setup_users():
     """Set up the info for each user specified in the user.yml file."""
     for admin in user_info['admin']:
@@ -123,8 +124,10 @@ def setup_users():
                 '--group="admin"',
                 admin['user_id'],
             )
-            print "Added user %s. Please remember to set email in the GUI."\
+            print(
+                "Added user %s. Please remember to set email in the GUI."
                 % admin['display_name']
+            )
     if user_info.get('others'):
         for user in user_info.get('others'):
             for key in user.keys():
@@ -144,8 +147,8 @@ def setup_users():
                     '--display-name="%s"' % user['display_name'],
                     user['user_id'],
                 )
-                print "Added user %s." % user['display_name']
-                print "Please remember to set email in the GUI."
+                print("Added user %s." % user['display_name'])
+                print("Please remember to set email in the GUI.")
 
 
 def main():
