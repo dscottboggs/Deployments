@@ -3,6 +3,7 @@ from jinja2                 import Template
 from subprocess             import check_call
 from time                   import sleep
 from os                     import execlp as switch_to_cmd
+from os.path                import join
 from deployments.nextcloud  import occ, client, user_info, THIS_DIR
 from deployments            import font
 from deployments.misc       import wait
