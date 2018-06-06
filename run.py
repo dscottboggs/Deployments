@@ -16,7 +16,7 @@ THIS_DIR = dirname(abspath(__file__))
 def ask_for_admin_user():
     """Request input for user details."""
     def offer2edit_userconf():
-        response = raw_input("Would you like to edit the user config? (y/N)  ")
+        response = input("Would you like to edit the user config? (y/N)  ")
         try:
             if response.lower()[0] == "y":
                 if environ.get('EDITOR'):
@@ -59,11 +59,11 @@ def ask_for_admin_user():
                 )
             )
     else:
-        display_name    = raw_input("What's your full name?    ")
-        user_id         = raw_input("Pick a unique user ID:    ")
+        display_name    = input("What's your full name?    ")
+        user_id         = input("Pick a unique user ID:    ")
         assert not search(r'\W', user_id), \
             "User ID can only contain alphanumeric characters and _"
-        email           = raw_input("What's your email?        ")
+        email           = input("What's your email?        ")
         assert match(r'^\w[\w\.\-]*\w@\w[\w\.\-]*\w\.\w[\w\.]*\w$', email),\
             "Please enter a valid email."
         print("Pick an account password, or leave this blank to get a")
@@ -71,7 +71,7 @@ def ask_for_admin_user():
         if not password:
             password = random_words(3)
         db_password     = random_words(3)
-        site_url        = raw_input("What's the nextcloud URL? ")
+        site_url        = input("What's the nextcloud URL? ")
         assert match(r'^\w[\w\.-]*\w$', site_url),\
             "Please enter a valid URL."
         assert not match(r'^https?://', site_url), \
@@ -100,7 +100,7 @@ def ask_for_admin_user():
                     ), 'r'
                 ) as user_file:
             print(
-                  "I've stored the following under nextcloud/user.yml:\n"
+                "I've stored the following under nextcloud/user.yml:\n"
                 + user_file.read()
             )
         offer2edit_userconf()
@@ -115,12 +115,8 @@ def run_tests_at(filepath):
 
 
 def bring_up_service_at(filepath):
-    check_call(
-        "docker-compose --project-directory {0} --file {0}/".format(
-            filepath
-        ) + "docker-compose.yml up -d",
-        shell=True
-    )
+    """Execute `docker-compose up -d` in the specified directory."""
+    return check_call("docker-compose up -d", shell=True, cwd=filepath)
 
 
 def setup_nextcloud():
@@ -135,7 +131,8 @@ def setup_nextcloud():
     )
     install_nextcloud()
     bring_up_service_at(nextcloud_dir)
-    wait(30,
+    wait(
+        30,
         msg="Unfortunately, the reverse proxy generation and letsencrypt "
             "setup takes some time, including an actual timer. Please wait ",
         sep=""
@@ -155,7 +152,8 @@ def setup_resume():
         "resume"
     )
     bring_up_service_at(resume_filepath)
-    wait(30,
+    wait(
+        30,
         msg="Unfortunately, the reverse proxy generation and letsencrypt "
             "setup takes some time, including an actual timer. Please wait ",
         sep=""
