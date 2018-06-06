@@ -2,11 +2,10 @@
 from jinja2                 import Template
 from subprocess             import check_call
 from time                   import sleep
-from os                     import execlp                      as switch_to_cmd
-from deployments.nextcloud  import occ, client, user_info
+from os                     import execlp as switch_to_cmd
+from deployments.nextcloud  import occ, client, user_info, THIS_DIR
 from deployments            import font
 from deployments.misc       import wait
-
 
 example_users = [
     {
@@ -43,7 +42,7 @@ def compose():
         for url in user_info['urls'][:-1]:
             urls += url + ','
         urls += user_info['urls'][-1]
-    with open(u"docker-compose.yml.j2", u'r') as compose_file:
+    with open(join(THIS_DIR, "docker-compose.yml.j2"), 'r') as compose_file:
         composition_text = Template(compose_file.read()).render(
             {
                 u"password":    user_info[u'database'],
@@ -51,10 +50,9 @@ def compose():
                 u"admin_email": user_info[u'admin'][0]['email']
             }
         )
-    with open(u"docker-compose.yml", u'w') as compose_file:
+    with open(join(THIS_DIR, "docker-compose.yml"), 'w') as compose_file:
         compose_file.write(composition_text)
-
-    check_call(u"docker-compose up -d", shell=True)
+    check_call("docker-compose up -d", shell=True, cwd=THIS_DIR)
     wait(30)
     assert len(client.containers.list(filters={u"name": u"nextcloud_frontend_1"}))
     return client.containers.list(
@@ -81,7 +79,11 @@ def install_nextcloud(nextcloud_container):
             ):
         print("Install command failed.")
         exit(1)
-    check_call(u'docker-compose down && docker-compose up -d', shell=True)
+    check_call(
+        u'docker-compose down && docker-compose up -d',
+        shell=True,
+        cwd=THIS_DIR
+    )
     return client.containers.list(
         filters={u"name": u"nextcloud_frontend_1"}
     )[0]
