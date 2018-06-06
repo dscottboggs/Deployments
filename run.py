@@ -17,24 +17,27 @@ def ask_for_admin_user():
     """Request input for user details."""
     def offer2edit_userconf():
         response = raw_input("Would you like to edit the user config? (y/N)  ")
-        if response.lower()[0] == "y":
-            if environ.get('EDITOR'):
-                check_call("%s %s" % (
-                    environ.get('EDITOR'),
-                    join(THIS_DIR, "deployments", "nextcloud", "user.yml")
-                ), shell=True)
-            else:
-                try:
-                    check_call("nano %s" % join(
-                        THIS_DIR, "deployments", "nextcloud", "user.yml"
+        try:
+            if response.lower()[0] == "y":
+                if environ.get('EDITOR'):
+                    check_call("%s %s" % (
+                        environ.get('EDITOR'),
+                        join(THIS_DIR, "deployments", "nextcloud", "user.yml")
                     ), shell=True)
-                except CalledProcessError as e:
-                    if e.returncode == 127:
-                        check_call("vi %s" % join(
+                else:
+                    try:
+                        check_call("nano %s" % join(
                             THIS_DIR, "deployments", "nextcloud", "user.yml"
                         ), shell=True)
-                    else:
-                        raise
+                    except CalledProcessError as e:
+                        if e.returncode == 127:
+                            check_call("vi %s" % join(
+                                THIS_DIR, "deployments", "nextcloud", "user.yml"
+                            ), shell=True)
+                        else:
+                            raise
+        except IndexError:
+            pass
     if access(
         join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
         file_exists
