@@ -180,12 +180,15 @@ def setup_reverse_proxy():
     """Setup the reverse proxy containers."""
     bring_up_service_at(reverse_proxy_path)
     run_tests_at(reverse_proxy_path)
-    run(
-        "docker-compose logs -f",
-        shell=True,
-        check=False,
-        cwd=reverse_proxy_path
-    )
+    try:
+        run(
+            "docker-compose logs -f",
+            shell=True,
+            check=False,
+            cwd=reverse_proxy_path
+        )
+    except KeyboardInterrupt:
+        ...
     backup = BackupReverseProxy()
     backup.do_backup('weekly', join(reverse_proxy_path, "backup.py"))
     # ^^ nothing to back up yet, this is to install the cronjob
