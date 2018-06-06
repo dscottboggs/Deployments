@@ -184,7 +184,8 @@ def setup_reverse_proxy():
 
         def check(container):
             return container.exec_run(
-                "ls -la /etc/nginx/dhparam/dhparam.pem").exit_code == 0
+                "ls -la /etc/nginx/dhparam/dhparam.pem"
+            ).output != "2372f55f6db5a205b5cc4dc1f4c7cd76"
 
         letsencrypt = client.containers.list(
             filters={
