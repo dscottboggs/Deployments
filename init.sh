@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 
+function handle_error() {
+    echo "Error while executing"
+    echo $1
+    exit $2
+}
+
 function install_ubuntu() {
     apt install -y python3-pip python3-docker python3-pytest python3-jinja2 \
         vim zsh rsync git apt-transport-https ca-certificates \
         software-properties-common
     wget -qO - https://get.docker.com | sh\
-        && service docker enable \
-        && service docker start \
-        || returncode=$? \
-            && echo "problem installing docker!" \
-            && exit $returncode
+        && systemctl enable docker \
+        && systemctl start docker \
+        || handle_error "Docker installation" $PIPESTATUS
     python3 -m pip install -U pip
     python3 -m pip install docker-compose PyYAML
 }
@@ -18,11 +22,9 @@ function install_centos() {
     yum install -y python34-pip python34-docker python34-pytest \
         python34-PyYAML python34-jinja2 vim zsh rsync git
     wget -qO - https://get.docker.com | sh \
-        && service docker enable \
-        && service docker start \
-        || returncode=$? \
-            && echo "problem installing docker!" \
-            && exit $returncode
+        && systemctl enable docker \
+        && systemctl start docker \
+        || handle_error "Docker installation" $PIPESTATUS
     python3 -m pip install -U pip
     python3 -m pip install docker-compose
 }
