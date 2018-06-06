@@ -17,18 +17,38 @@ THIS_DIR = dirname(abspath(__file__))
 
 def ask_for_admin_user():
     """Request input for user details."""
+    def offer2edit_userconf():
+        response = raw_input("Would you like to edit the user config? (y/N)  ")
+        if response.lower()[0] == "y":
+            if environ.get('EDITOR'):
+                check_call("%s %s" % (
+                    environ.get('EDITOR'),
+                    join(THIS_DIR, "deployments", "nextcloud", "user.yml")
+                ), shell=True)
+            else:
+                check_call("nano %s" % join(
+                    THIS_DIR, "deployments", "nextcloud", "user.yml"
+                ), shell=True)
     if access(
-                join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
-                file_exists
-            ) and not access(
-                join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
-                file_is_readable
-            ):
-        raise OSError(
-            "I don't have access to %s." % join(
-                THIS_DIR, "deployments", "nextcloud", "user.yml"
+        join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
+        file_exists
+    ):
+        if access(
+            join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
+            file_is_readable
+        ):
+            print("We'll be using this for the user configuration:")
+            with open(join(
+                        THIS_DIR, "deployments", "nextcloud", "user.yml"
+                    ), 'r') as userconf:
+                print(userconf.read())
+            offer2edit_userconf()
+        else:
+            raise OSError(
+                "I don't have access to %s." % join(
+                    THIS_DIR, "deployments", "nextcloud", "user.yml"
+                )
             )
-        )
     else:
         display_name    = raw_input("What's your full name?    ")
         user_id         = raw_input("Pick a unique user ID:    ")
@@ -68,23 +88,13 @@ def ask_for_admin_user():
         with open(
                     join(
                         THIS_DIR, "deployments", "nextcloud", "user.yml"
-                    ), 'w'
+                    ), 'r'
                 ) as user_file:
             print(
                   "I've stored the following under nextcloud/user.yml:\n"
                 + user_file.read()
             )
-        response = raw_input("Would you like to edit the user config? (y/N)  ")
-        if response.lower()[0] == "y":
-            if environ.get('EDITOR'):
-                check_call("%s %s" % (
-                    environ.get('EDITOR'),
-                    join(THIS_DIR, "deployments", "nextcloud", "user.yml")
-                ), shell=True)
-            else:
-                check_call("nano %s" % join(
-                    THIS_DIR, "deployments", "nextcloud", "user.yml"
-                ), shell=True)
+        offer2edit_userconf()
 
 
 def run_tests_at(filepath):
