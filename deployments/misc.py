@@ -222,3 +222,10 @@ def wait(
         sleep(1)
     if throw:
         raise throw()
+
+
+def when(condition, callback, *cb_args, **cb_kwargs):
+    """Wait until condition is true and then call the callback function."""
+    while not condition:
+        sleep(1)
+    callback(*cb_args, **cb_kwargs)
