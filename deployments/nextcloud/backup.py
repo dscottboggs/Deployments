@@ -14,7 +14,7 @@ class BackupNextcloud(BasicRsyncBackup):
         self.now = int(datetime.now().strftime(r"%s"))
         self.stage = join(self.backup_dir, "staging", str(self.now))
         self.container = client.containers.list(
-            filter={'name': 'nextcloud_database_1'}
+            filters={'name': 'nextcloud_database_1'}
         )[0]    # throws an exception if the container isn't running.
 
     def do_backup(self, *args, **kwargs):
