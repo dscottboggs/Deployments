@@ -1,13 +1,12 @@
 #!/usr/bin/env python2
-from docker                 import DockerClient
 from jinja2                 import Template
-from yaml                   import load, dump
-from json                   import loads, dumps
 from subprocess             import check_call
 from time                   import sleep
-from deployments.nextcloud  import occ, client, font
-from os                     import execlp                      as switch_to_cmd
-
+from os                     import execlp as switch_to_cmd
+from os.path                import join
+from deployments.nextcloud  import occ, client, user_info, THIS_DIR
+from deployments            import font
+from deployments.misc       import wait
 
 example_users = [
     {
@@ -16,38 +15,20 @@ example_users = [
         "email":        "email@address.com",
         "password":     "random-pa$sw0rd",
     }, {
-        "display_name": "Optional second admin"
-        "user_id": "not_required"
-        "email": "but_perfectly@valid.com"
+        "display_name": "Optional second admin",
+        "user_id": "not_required",
+        "email": "but_perfectly@valid.com",
         "password": "delete_if_not_used"
     }, {
-        "display_name": "Same format"
-        "user_id": "as_above"
-        "email": "you@get.the"
+        "display_name": "Same format",
+        "user_id": "as_above",
+        "email": "you@get.the",
         "password": "idea.jpg"
     }
 ]
 
+
 class ContainerDidNotStartException(Exception): pass
-
-
-def wait(until, condition=lambda: False, throw=False):
-    u"""Wait for `until` seconds, or for `condition` to be true.
-
-    By default `condition` is false, causing this function to wait the whole
-    time specified by until. The `condition` parameter must be a callable.
-
-    If throw is a truthy value, it's expected to be a throwable callable,
-    i.e. the constructor of a class that extends Exception.
-    """
-    i = 0
-    while i < until:
-        if condition():
-            return
-        i += 1
-        sleep(1)
-    if throw:
-        raise throw()
 
 
 def compose():
@@ -62,7 +43,7 @@ def compose():
         for url in user_info['urls'][:-1]:
             urls += url + ','
         urls += user_info['urls'][-1]
-    with open(u"docker-compose.yml.j2", u'r') as compose_file:
+    with open(join(THIS_DIR, "docker-compose.yml.j2"), 'r') as compose_file:
         composition_text = Template(compose_file.read()).render(
             {
                 u"password":    user_info[u'database'],
@@ -70,10 +51,9 @@ def compose():
                 u"admin_email": user_info[u'admin'][0]['email']
             }
         )
-    with open(u"docker-compose.yml", u'w') as compose_file:
+    with open(join(THIS_DIR, "docker-compose.yml"), 'w') as compose_file:
         compose_file.write(composition_text)
-
-    check_call(u"docker-compose up -d", shell=True)
+    check_call("docker-compose up -d", shell=True, cwd=THIS_DIR)
     wait(30)
     assert len(client.containers.list(filters={u"name": u"nextcloud_frontend_1"}))
     return client.containers.list(
@@ -100,7 +80,11 @@ def install_nextcloud(nextcloud_container):
             ):
         print("Install command failed.")
         exit(1)
-    check_call(u'docker-compose down && docker-compose up -d', shell=True)
+    check_call(
+        u'docker-compose down && docker-compose up -d',
+        shell=True,
+        cwd=THIS_DIR
+    )
     return client.containers.list(
         filters={u"name": u"nextcloud_frontend_1"}
     )[0]

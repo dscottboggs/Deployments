@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from requests               import get, put, delete
 from yaml                   import load
-from deployments.nextcloud  import user_info, client, occ
-from time                   import sleep
+from deployments.nextcloud  import user_info, client, occ, THIS_DIR
+from deployments.misc       import wait
 from subprocess             import check_call
 
 
@@ -25,6 +25,7 @@ def test_index():
     assert response.status_code == 200
     assert response.url == "https://s.cloud.tams.tech/login"
 
+
 def test_user():
     """Test that the user is present and all."""
     assert {'scott': 'scott'} in load(occ(None, "user:list"))
@@ -36,6 +37,7 @@ def test_user():
     assert {'enabled': True} in uinfo
     assert {'groups': ['admin']} in uinfo
     assert {'quota': 'none'} in uinfo
+
 
 def test_upload():
     """Test that uploading a file works.
@@ -70,7 +72,6 @@ def test_upload():
     assert response.ok
 
 
-
 def test_upload_survives():
     """Test that an uploaded file survives container destruction."""
     user = user_info['admin'][0]
@@ -94,9 +95,10 @@ def test_upload_survives():
     check_call(
         "docker-compose down && docker volume prune -f"
         + "&& docker-compose up -d",
-        shell=True
+        shell=True,
+        cwd=THIS_DIR
     )
-    sleep(20)
+    wait(20)
     response = get(
         url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
             url, user['user_id']
@@ -112,3 +114,9 @@ def test_upload_survives():
         auth=(user['user_id'], user['password'])
     )
     assert response.ok
+
+
+def test_container_presence():
+    """Test that the right containers are present."""
+    assert client.containers.list(filters={"name": "nextcloud_frontend_1"})
+    assert client.containers.list(filters={"name": "nextcloud_database_1"})

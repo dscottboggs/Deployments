@@ -1,5 +1,11 @@
-from docker import DockerClient
+from docker     import DockerClient
+from os.path    import join, abspath, dirname
+from requests   import get
+from random     import randrange
+from time       import sleep
+from sys        import stdout
 client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
+
 
 class TerminalOutputModifiers:
     """ANSI codes for terminal output colors and effects."""
@@ -87,6 +93,7 @@ class TerminalOutputModifiers:
                 print("Effect %s not found" % effect)
         return out
 
+
 def occ(environment, *cmdargs):
     """Execute the `php occ` command in the container.
 
@@ -133,12 +140,85 @@ def occ(environment, *cmdargs):
             )
     result = container.exec_run(cmd, user="www-data")
     if result.exit_code:
-        print "ERROR while running the following command in the"
-        print "nextcloud container:"
-        print cmd
-        print "The command output the following:"
-        print result.output
-        print "and executed with the code %d." % result.exit_code
+        print("ERROR while running the following command in the")
+        print("nextcloud container:")
+        print(cmd)
+        print("The command output the following:")
+        print(result.output)
+        print("and executed with the code %d." % result.exit_code)
         return False
     else:
         return result.output
+
+
+def _get_wordlist():
+    """Internal function, for random_words()
+
+    Returns a list of words, gathered form words.txt or freebsd.org"""
+    wordlist = []
+    try:
+        with open(
+                    join(abspath(dirname(__file__)), "list_of_words.txt"),
+                    'r'
+                ) as wordlistfile:
+            wordlist = map(
+                lambda word: word.strip('\n'),
+                wordlistfile.readlines()
+            )
+    except IOError:
+        response = get("http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain")
+        wordlist = response.text.split('\n')
+        with open("words.txt", 'w') as wordlistfile:
+            wordlistfile.writelines(
+                map(lambda word: word + '\n', wordlist)
+            )
+    return wordlist
+
+
+def random_words(num, sep="_"):
+    """
+    Generate `num` random words, separated by `sep`.
+
+    sep defaults to _
+    """
+    result = ""
+
+    wordlist = _get_wordlist()
+    while num:
+        num -= 1
+        result += wordlist[randrange(len(wordlist))]
+        if num:
+            result += sep
+    return result
+
+
+def wait(
+    time=10,
+    msg=None,
+    sep=" -- ",
+    throw=False,
+    condition=lambda: False, cargs=(), ckwargs={}
+):
+    """Display a message for a while, or until `condition` is True.
+
+    By default `condition` returns only False, causing this function to wait
+    the whole time specified by until. The `condition` parameter MUST be a
+    callable. The values of `cargs` and `ckwargs` are passed to `condition` as
+    arguments.
+
+    If throw is a truthy value, it's expected to be a throwable callable,
+    i.e. the constructor of a class that extends Exception.
+    """
+    while time:     # (remains)
+        if msg:
+            stdout.write("%s%s%d seconds.    \r" % ( msg, sep, time))
+            stdout.flush()
+        else:
+            stdout.write("Wait %d seconds.    \r" % time)
+            stdout.flush()
+        if condition(*cargs, **ckwargs):
+            return
+        time -= 1
+        sleep(1)
+    if throw:
+        raise throw()
