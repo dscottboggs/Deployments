@@ -3,11 +3,9 @@ from os                                 import access, F_OK as file_exists
 from os                                 import R_OK as file_is_readable
 from os                                 import environ, getuid, getgid
 from os.path                            import abspath, dirname, join
-from time                               import sleep
 from deployments.reverse_proxy.backup   import BackupReverseProxy
-from deployments.misc                   import random_words
+from deployments.misc                   import random_words, wait
 from pytest                             import main as pytest
-from sys                                import stdout
 from re                                 import search, match
 from getpass                            import getpass
 from yaml                               import dump
@@ -120,19 +118,6 @@ def bring_up_service_at(filepath):
         ) + "docker-compose.yml up -d",
         shell=True
     )
-
-
-def wait(time=10, msg=None, sep=" -- "):
-    """Display a message for a while."""
-    while time:     # (remains)
-        if msg:
-            stdout.write("%s%s%d seconds.    \r" % ( msg, sep, time))
-            stdout.flush()
-        else:
-            stdout.write("Wait %d seconds.    \r" % time)
-            stdout.flush()
-        time -= 1
-        sleep(1)
 
 
 def setup_nextcloud():

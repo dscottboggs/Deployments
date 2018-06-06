@@ -1,12 +1,11 @@
 #!/usr/bin/env python2
-from docker                 import DockerClient
 from jinja2                 import Template
-from yaml                   import load, dump
-from json                   import loads, dumps
 from subprocess             import check_call
 from time                   import sleep
-from deployments.nextcloud  import occ, client, font
 from os                     import execlp                      as switch_to_cmd
+from deployments.nextcloud  import occ, client
+from deployments            import font
+from deployments.misc       import wait
 
 
 example_users = [
@@ -30,25 +29,6 @@ example_users = [
 
 
 class ContainerDidNotStartException(Exception): pass
-
-
-def wait(until, condition=lambda: False, throw=False):
-    u"""Wait for `until` seconds, or for `condition` to be true.
-
-    By default `condition` is false, causing this function to wait the whole
-    time specified by until. The `condition` parameter must be a callable.
-
-    If throw is a truthy value, it's expected to be a throwable callable,
-    i.e. the constructor of a class that extends Exception.
-    """
-    i = 0
-    while i < until:
-        if condition():
-            return
-        i += 1
-        sleep(1)
-    if throw:
-        raise throw()
 
 
 def compose():
