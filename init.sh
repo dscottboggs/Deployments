@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 function install_ubuntu() {
-    apt install -y python3-pip python3-docker python3-pytest python3-pyyaml \
-        python3-jinja2 vim zsh rsycn git apt-transport-https ca-certificates \
+    apt install -y python3-pip python3-docker python3-pytest python3-jinja2 \
+        vim zsh rsycn git apt-transport-https ca-certificates \
         software-properties-common
     wget -qO - https://get.docker.com | sh\
         && service docker enable \
@@ -11,7 +11,7 @@ function install_ubuntu() {
             && echo "problem installing docker!" \
             && exit $returncode
     python3 -m pip install -U pip
-    python3 -m pip install docker-compose
+    python3 -m pip install docker-compose PyYAML
 }
 function install_centos() {
     yum install -y epel-release
