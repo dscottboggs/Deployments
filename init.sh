@@ -38,5 +38,5 @@ echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICa1xQPW/kFnPrO51Mp5gWpEpRZO8d6vtrWxII
 cd /home/scott && \
     git clone --recursive https://github.com/dscottboggs/Deployments.git
 cd /home/scott/Deployments      &&\
-    python3.4 setup.py install   &&\
-    python3.4 run.py
+    python3 setup.py install   &&\
+    python3 run.py
