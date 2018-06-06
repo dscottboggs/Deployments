@@ -1,4 +1,4 @@
-from subprocess                         import check_call
+from subprocess                         import check_call, CalledProcessError
 from os                                 import access, F_OK as file_exists
 from os                                 import R_OK as file_is_readable
 from os                                 import environ, getuid, getgid
@@ -26,9 +26,17 @@ def ask_for_admin_user():
                     join(THIS_DIR, "deployments", "nextcloud", "user.yml")
                 ), shell=True)
             else:
-                check_call("nano %s" % join(
-                    THIS_DIR, "deployments", "nextcloud", "user.yml"
-                ), shell=True)
+                try:
+                    check_call("nano %s" % join(
+                        THIS_DIR, "deployments", "nextcloud", "user.yml"
+                    ), shell=True)
+                except CalledProcessError as e:
+                    if e.returncode == 127:
+                        check_call("vi %s" % join(
+                            THIS_DIR, "deployments", "nextcloud", "user.yml"
+                        ), shell=True)
+                    else:
+                        raise
     if access(
         join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
         file_exists
