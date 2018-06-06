@@ -1,6 +1,7 @@
-from deployments    import BasicRsyncBackup, client
-from os.path        import dirname, abspath, join
-from datetime       import datetime
+from deployments            import BasicRsyncBackup, client
+from deployments.nextcloud  import user_info
+from os.path                import dirname, abspath, join
+from datetime               import datetime
 
 
 class BackupNextcloud(BasicRsyncBackup):
@@ -24,7 +25,9 @@ class BackupNextcloud(BasicRsyncBackup):
 
     def backup_database(self):
         """Get a dump from the database and store it in the staging area."""
-        dump_result = self.container.exec_run("mysqldump nextcloud")
+        dump_result = self.container.exec_run(
+            "mysqldump -u nextcloud -p '%s' nextcloud" % user_info['database']
+        )
         if dump_result.exit_code:
             raise ValueError(
                 "The mysqldump command returned %d. The command output:\n%s"
