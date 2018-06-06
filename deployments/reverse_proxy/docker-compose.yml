@@ -10,6 +10,7 @@ services:
         - ./mounts/vhost.d:/etc/nginx/vhost.d:rw
         - ./mounts/certs:/etc/nginx/certs:rw
         - ./mounts/webroot:/usr/share/nginx/html:rw
+        - ./mounts/dhparam:/etc/nginx/dhparam:rw
 
     letsencrypt-nginx-proxy-companion: # should automatically handle
       image: jrcs/letsencrypt-nginx-proxy-companion #letsencrypt config
