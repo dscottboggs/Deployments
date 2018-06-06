@@ -61,7 +61,7 @@ class BasicRsyncBackup:
 
     def archive(self):
         """Put the folder in a gzipped tar archive."""
-        archive_location = "%s/%s.tar.gz" % (self.backup_dir, self.now)
+        archive_location = "%s/%d.tar.gz" % (self.backup_dir, self.now)
         if access(archive_location, file_exists):
             raise OSError("%s already exists!" % archive_location)
         pwd = getcwd()

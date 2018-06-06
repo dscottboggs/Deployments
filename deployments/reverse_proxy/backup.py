@@ -14,7 +14,7 @@ class BackupReverseProxy(BasicRsyncBackup):
 
     def __init__(self):
         """Initialize variables needed for all methods."""
-        self.now = datetime.now().strftime('%s')       # the current epoch time
+        self.now = int(datetime.now().strftime('%s'))  # the current epoch time
         self.stage = "%(bd)s/staging/%(t)s" % {
             'bd': self.backup_dir, 't': self.now
         }
