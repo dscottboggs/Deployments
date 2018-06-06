@@ -2,7 +2,7 @@
 
 function install_ubuntu() {
     apt install -y python3-pip python3-docker python3-pytest python3-jinja2 \
-        vim zsh rsycn git apt-transport-https ca-certificates \
+        vim zsh rsync git apt-transport-https ca-certificates \
         software-properties-common
     wget -qO - https://get.docker.com | sh\
         && service docker enable \
