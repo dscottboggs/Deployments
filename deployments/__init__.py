@@ -1,11 +1,12 @@
 """Backup the certificates and configurations stored in ./mounts/"""
-from subprocess import check_call
-from tarfile    import TarFile
-from os         import makedirs, access, F_OK as file_exists, getcwd, chdir
-from os.path    import isdir, abspath
-from shutil     import rmtree
-from misc       import TerminalOutputModifiers
-from docker     import DockerClient
+from subprocess         import check_call
+from tarfile            import TarFile
+from os                 import makedirs, access, F_OK as file_exists
+from os                 import getcwd, chdir
+from os.path            import isdir
+from shutil             import rmtree
+from deployments.misc   import TerminalOutputModifiers
+from docker             import DockerClient
 
 
 client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
