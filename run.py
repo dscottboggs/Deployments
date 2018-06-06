@@ -183,7 +183,7 @@ def setup_reverse_proxy():
     def dhparam_is_done():
 
         def check(container):
-            return "2372f55f6db5a205b5cc4dc1f4c7cd76" \
+            return b"2372f55f6db5a205b5cc4dc1f4c7cd76" \
                 not in container.exec_run(
                     "md5sum /etc/nginx/dhparam/dhparam.pem"
                 ).output
