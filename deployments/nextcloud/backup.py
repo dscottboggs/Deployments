@@ -8,7 +8,7 @@ class BackupNextcloud(BasicRsyncBackup):
     """Backup the database and files for the nextcloud service."""
 
     backup_dir = "/backups/nextcloud"
-    source_dir = join(dirname(abspath(__file__)), "mounts")
+    source_dir = join(dirname(abspath(__file__)), "mounts", "webroot")
 
     def __init__(self):
         """Initialize variables that are dynamic."""
@@ -20,8 +20,8 @@ class BackupNextcloud(BasicRsyncBackup):
 
     def do_backup(self, *args, **kwargs):
         """Override to add extra steps."""
-        self.backup_database()
         super().do_backup(*args, **kwargs)
+        self.backup_database()
 
     def backup_database(self):
         """Get a dump from the database and store it in the staging area."""
