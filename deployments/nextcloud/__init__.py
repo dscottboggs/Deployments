@@ -5,7 +5,10 @@ See README for usage.
 from docker import DockerClient
 
 
-with open(u"user.yml", u'r') as uInfo_file:
+THIS_DIR = dirname(abspath(__file__))
+
+
+with open(join(THIS_DIR, "user.yml"), u'r') as uInfo_file:
     user_info = load(uInfo_file)
 
 
