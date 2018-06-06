@@ -47,7 +47,7 @@ def test_requests():
                 assert len(response.history) == 1
                 assert response.history[0].status_code == 301
                 assert response.status_code == 200
-            except SLLError:
+            except SSLError:
                 ...
             try:
                 response = get("https://%s/%s" % (url, page.filename))
