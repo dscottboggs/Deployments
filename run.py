@@ -11,6 +11,11 @@ from getpass                            import getpass
 from yaml                               import dump
 
 THIS_DIR = dirname(abspath(__file__))
+reverse_proxy_path = join(
+    abspath(dirname(__file__)),
+    "deployments",
+    "reverse_proxy"
+)
 
 
 def ask_for_admin_user():
@@ -137,6 +142,7 @@ def setup_nextcloud():
             "setup takes some time, including an actual timer. Please wait ",
         sep=""
     )
+    run_tests_at(reverse_proxy_path)
     run_tests_at(nextcloud_dir)
     brp = BackupReverseProxy()
     bnc = BackupNextcloud()
@@ -158,6 +164,7 @@ def setup_resume():
             "setup takes some time, including an actual timer. Please wait ",
         sep=""
     )
+    run_tests_at(reverse_proxy_path)
     run_tests_at(resume_filepath)
     backup = BackupReverseProxy()
     backup.do_backup()
@@ -165,11 +172,6 @@ def setup_resume():
 
 def setup_reverse_proxy():
     """Setup the reverse proxy containers."""
-    reverse_proxy_path = join(
-        abspath(dirname(__file__)),
-        "deployments",
-        "reverse_proxy"
-    )
     bring_up_service_at(reverse_proxy_path)
     run_tests_at(reverse_proxy_path)
     backup = BackupReverseProxy()
