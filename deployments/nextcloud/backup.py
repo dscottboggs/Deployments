@@ -26,7 +26,8 @@ class BackupNextcloud(BasicRsyncBackup):
     def backup_database(self):
         """Get a dump from the database and store it in the staging area."""
         dump_result = self.container.exec_run(
-            "mysqldump -u nextcloud -p '%s' nextcloud" % user_info['database']
+            "mysqldump -u nextcloud --password='%s' nextcloud"
+            % user_info['database']
         )
         if dump_result.exit_code:
             raise ValueError(
