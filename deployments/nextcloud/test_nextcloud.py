@@ -118,5 +118,5 @@ def test_upload_survives():
 
 def test_container_presence():
     """Test that the right containers are present."""
-    assert client.containers.list(filter={"name": "nextcloud_frontend_1"})
-    assert client.containers.list(filter={"name": "nextcloud_database_1"})
+    assert client.containers.list(filters={"name": "nextcloud_frontend_1"})
+    assert client.containers.list(filters={"name": "nextcloud_database_1"})
