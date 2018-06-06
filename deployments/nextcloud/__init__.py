@@ -3,6 +3,7 @@
 See README for usage.
 """
 from docker import DockerClient
+from os.path import join, abspath, dirname
 
 
 THIS_DIR = dirname(abspath(__file__))
