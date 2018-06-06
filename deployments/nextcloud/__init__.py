@@ -2,8 +2,9 @@
 
 See README for usage.
 """
-from docker import DockerClient
-from os.path import join, abspath, dirname
+from deployments    import client
+from os.path        import join, abspath, dirname
+from yaml           import load
 
 
 THIS_DIR = dirname(abspath(__file__))
