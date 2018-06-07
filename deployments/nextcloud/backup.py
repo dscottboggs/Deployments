@@ -20,8 +20,10 @@ class BackupNextcloud(BasicRsyncBackup):
 
     def do_backup(self, *args, **kwargs):
         """Override to add extra steps."""
-        super().do_backup(*args, **kwargs)
+        self.prep_folder(self.backup_dir)
+        self.prep_folder(self.stage)
         self.backup_database()
+        super().do_backup(*args, **kwargs)
 
     def backup_database(self):
         """Get a dump from the database and store it in the staging area."""
