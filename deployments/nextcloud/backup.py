@@ -7,7 +7,7 @@ from datetime               import datetime
 class BackupNextcloud(BasicRsyncBackup):
     """Backup the database and files for the nextcloud service."""
 
-    backup_dir = "/backups/nextcloud"
+    backup_dir = "/backup/nextcloud"
     source_dir = join(dirname(abspath(__file__)), "mounts", "webroot")
 
     def __init__(self):
