@@ -1,0 +1,28 @@
+version: '3.1'
+services:
+  frontend:
+    image: wordpress
+    expose:
+      - '80'
+    links:
+      - database
+    volumes:
+      wordpress_webroot:/var/www/html:rw
+    environment:
+      VIRTUAL_HOST: {{ url }}
+      LETSENCRYPT_HOST: {{ url }}
+      LETSENCRYPT_EMAIL: {{ admin_email }}
+  database:
+    image: mariadb:latest
+    restart: always
+    volumes:
+      wordpress_database:/var/lib/mysql
+    networks:
+      - wordpress_db_network
+    deploy:
+      placement:
+        constraints: [ node.role == manager ]
+networks:
+  reverse_proxy_default:
+    external: true
+  wordpress_db_network:

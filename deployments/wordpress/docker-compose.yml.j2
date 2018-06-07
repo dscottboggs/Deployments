@@ -1,0 +1,26 @@
+version: '2.0'
+services:
+  frontend:
+    image: wordpress
+    expose:
+      - '80'
+    links:
+      - database
+    volumes:
+      - ./mounts/secrets:/secrets
+    environment:
+      VIRTUAL_HOST: {{ url }}
+      LETSENCRYPT_HOST: {{ url }}
+      LETSENCRYPT_EMAIL: {{ admin_email }}
+      WORDPRESS_DB_USER:
+  database:
+    mariadb:
+    restart: always
+    volumes:
+      ./mounts/database:/var/lib/mysql
+    networks:
+      - wordpress_db_network
+networks:
+  reverse_proxy_default:
+    external: true
+  wordpress_db_network:
