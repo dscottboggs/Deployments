@@ -4,8 +4,8 @@ from subprocess             import check_call
 from time                   import sleep
 from os                     import execlp as switch_to_cmd
 from os.path                import join
-from deployments.nextcloud  import occ, client, user_info, THIS_DIR
-from deployments            import font
+from deployments.nextcloud  import occ, client, THIS_DIR
+from deployments            import font, user_config
 from deployments.misc       import wait
 
 example_users = [
@@ -34,21 +34,21 @@ class ContainerDidNotStartException(Exception): pass
 def compose():
     """Create the docker-compose file from the template and call 'up' on it."""
     urls = ''
-    if not user_info.get('urls'):
+    if not user_config.get('urls'):
         print("At least one URL must be specified.")
         exit(1)
-    elif len(user_info['urls']) == 1:
-        urls = user_info['urls'][0]
+    elif len(user_config['urls']) == 1:
+        urls = user_config['urls'][0]
     else:
-        for url in user_info['urls'][:-1]:
+        for url in user_config['urls'][:-1]:
             urls += url + ','
-        urls += user_info['urls'][-1]
+        urls += user_config['urls'][-1]
     with open(join(THIS_DIR, "docker-compose.yml.j2"), 'r') as compose_file:
         composition_text = Template(compose_file.read()).render(
             {
-                u"password":    user_info[u'database'],
+                u"password":    user_config[u'database'],
                 u"url":         urls,
-                u"admin_email": user_info[u'admin'][0]['email']
+                u"admin_email": user_config[u'admin'][0]['email']
             }
         )
     with open(join(THIS_DIR, "docker-compose.yml"), 'w') as compose_file:
@@ -63,8 +63,8 @@ def compose():
 
 def install_nextcloud(nextcloud_container):
     assert nextcloud_container.status == u"running"
-    assert user_info[u'database'] != 'password'
-    assert "localhost" not in user_info[u'urls'], \
+    assert user_config[u'database'] != 'password'
+    assert "localhost" not in user_config[u'urls'], \
         "Since this process automates SSL verification, you must use a valid"\
         + "URL."
     if not occ(
@@ -74,9 +74,9 @@ def install_nextcloud(nextcloud_container):
                 '--database-name="nextcloud"',
                 '--database-user="nextcloud"',
                 '--database-host="nextcloud_database_1"',
-                '--database-pass="%s"' % user_info[u'database'],
-                '--admin-user="%s"' % user_info[u'admin'][0][u'user_id'],
-                '--admin-pass="%s"' % user_info[u'admin'][0][u'password']
+                '--database-pass="%s"' % user_config[u'database'],
+                '--admin-user="%s"' % user_config[u'admin'][0][u'user_id'],
+                '--admin-pass="%s"' % user_config[u'admin'][0][u'password']
             ):
         print("Install command failed.")
         exit(1)
@@ -95,7 +95,7 @@ def set_trusted_domains(nextcloud_container):
     TODO handle more than one URL.
     """
     cmd_output = nextcloud_container.exec_run(
-        "sed -i s/localhost/%s/ config/config.php" % user_info['urls'][0]
+        "sed -i s/localhost/%s/ config/config.php" % user_config['urls'][0]
     )
     if cmd_output.exit_code:
         print("Error running the command to update the config:")
@@ -104,8 +104,15 @@ def set_trusted_domains(nextcloud_container):
 
 
 def setup_users():
-    """Set up the info for each user specified in the user.yml file."""
-    for admin in user_info['admin']:
+    """Set up the info for each user specified in the config.yml file.
+
+    If you're wondering why there's so much code here, I've included explicit
+    checks that someone not only hasn't copied the "example_config.yml" file
+    wholesale, but also that no part of it matches up.
+
+    #SECURITY: Perhaps some further sanitization is due here.
+    """
+    for admin in user_config['admin']:
         for key in admin.keys():
             for example_user in example_users:
                 if admin[key] == example_user[key]:
@@ -128,8 +135,8 @@ def setup_users():
                 "Added user %s. Please remember to set email in the GUI."
                 % admin['display_name']
             )
-    if user_info.get('others'):
-        for user in user_info.get('others'):
+    if user_config.get('others'):
+        for user in user_config.get('others'):
             for key in user.keys():
                 for example_user in example_users:
                     if user[key] == example_user[key]:

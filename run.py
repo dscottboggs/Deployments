@@ -30,12 +30,12 @@ def ask_for_admin_user():
                 if environ.get('EDITOR'):
                     run("%s %s" % (
                         environ.get('EDITOR'),
-                        join(THIS_DIR, "deployments", "nextcloud", "user.yml")
+                        join(THIS_DIR, "deployments", "config.yml")
                     ), shell=True, check=True)
                 else:
                     try:
                         run("nano %s" % join(
-                            THIS_DIR, "deployments", "nextcloud", "user.yml"
+                            THIS_DIR, "deployments", "config.yml"
                         ), shell=True, check=True)
                     except CalledProcessError as e:
                         if e.returncode == 127:
@@ -43,30 +43,30 @@ def ask_for_admin_user():
                                 THIS_DIR,
                                 "deployments",
                                 "nextcloud",
-                                "user.yml"
+                                "config.yml"
                             ), shell=True, check=True)
                         else:
                             raise
         except IndexError:
             pass
     if access(
-        join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
+        join(THIS_DIR, "deployments", "config.yml"),
         file_exists
     ):
         if access(
-            join(THIS_DIR, "deployments", "nextcloud", "user.yml"),
+            join(THIS_DIR, "deployments", "config.yml"),
             file_is_readable
         ):
             print("We'll be using this for the user configuration:")
             with open(join(
-                        THIS_DIR, "deployments", "nextcloud", "user.yml"
+                        THIS_DIR, "deployments", "config.yml"
                     ), 'r') as userconf:
                 print(userconf.read())
             offer2edit_userconf()
         else:
             raise OSError(
                 "I don't have access to %s." % join(
-                    THIS_DIR, "deployments", "nextcloud", "user.yml"
+                    THIS_DIR, "deployments", "config.yml"
                 )
             )
     else:
@@ -88,7 +88,7 @@ def ask_for_admin_user():
         assert not match(r'^https?://', site_url), \
             "Don't specify the protocol."
         with open(join(
-                    THIS_DIR, "deployments", "nextcloud", "user.yml"
+                    THIS_DIR, "deployments", "config.yml"
                 ), 'w') as user_file:
             dump(
                 {
@@ -107,11 +107,11 @@ def ask_for_admin_user():
             )
         with open(
                     join(
-                        THIS_DIR, "deployments", "nextcloud", "user.yml"
+                        THIS_DIR, "deployments", "config.yml"
                     ), 'r'
                 ) as user_file:
             print(
-                "I've stored the following under nextcloud/user.yml:\n"
+                "I've stored the following under nextcloud/config.yml:\n"
                 + user_file.read()
             )
         offer2edit_userconf()
@@ -132,7 +132,6 @@ def bring_up_service_at(filepath):
 
 def setup_nextcloud():
     """Setup the nextcloud service."""
-    ask_for_admin_user()
     from deployments.nextcloud.first_run import main as install_nextcloud
     from deployments.nextcloud.backup import BackupNextcloud
     nextcloud_dir = join(
@@ -195,6 +194,7 @@ def setup_reverse_proxy():
 
 
 def main():
+    ask_for_admin_user()
     if not (getuid() == 0 and getgid() == 0):
         print(
             "This application is intended to be run as root. I would "

@@ -2,7 +2,8 @@
 from requests               import get, put, delete
 from requests.exceptions    import SSLError
 from yaml                   import load
-from deployments.nextcloud  import user_info, client, occ, THIS_DIR
+from deployments.nextcloud  import client, occ, THIS_DIR
+from deployments            import user_config
 from deployments.misc       import wait
 from subprocess             import check_call
 
@@ -50,7 +51,7 @@ def test_upload():
     checks for the actual GUI interface.
     """
     try:
-        user = user_info['admin'][0]
+        user = user_config['admin'][0]
         url = "s.cloud.tams.tech"
         response = put(
             url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
@@ -82,7 +83,7 @@ def test_upload():
 def test_upload_survives():
     """Test that an uploaded file survives container destruction."""
     try:
-        user = user_info['admin'][0]
+        user = user_config['admin'][0]
         url = "s.cloud.tams.tech"
         response = put(
             url="https://%s/remote.php/dav/files/%s/testfile.txt" % (
