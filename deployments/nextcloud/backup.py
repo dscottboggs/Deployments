@@ -35,7 +35,7 @@ class BackupNextcloud(BasicRsyncBackup):
                     % (int(dump_result.exit_code), dump_result.output)
             )
         with open(join(self.stage, "database.dump"), 'w') as dumpfile:
-            dumpfile.write(dump_result.output)
+            dumpfile.write(dump_result.output.decode())
 
 
 def main():
