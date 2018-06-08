@@ -27,6 +27,7 @@ services:
       VIRTUAL_PORT: '9980'
       LETSENCRYPT_HOST: office.{{ url }}
       LETSENCRYPT_EMAIL: {{ admin_email }}
+      domain: cloud.{{ url }}
     expose:
       - '9980'
   database:
