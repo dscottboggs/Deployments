@@ -33,7 +33,7 @@ def occ(environment, *cmdargs):
         if environment:
             if isinstance(environment, dict):
                 for k, v in environment.items():
-                    cmd += "%s=%s" % (k, v)
+                    cmd += "%s=%s " % (k, v)
                 return cmd
             elif isinstance(environment, list):
                 for env in environment:
@@ -48,7 +48,7 @@ def occ(environment, *cmdargs):
             return ''
     container = client.containers.list(
         filters={"name": "nextcloud_frontend_1"})[0]
-    cmd = get_environ() + " php occ"
+    cmd = get_environ() + "php occ"
     for arg in cmdargs:
         if isinstance(arg, str):
             cmd += ' ' + arg

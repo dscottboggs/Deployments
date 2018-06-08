@@ -146,8 +146,8 @@ def setup_users():
 
 def install_collabora_in_nextcloud(container):
     """Install the Collabora app into nextcloud."""
-    occ("app:install", "richdocuments")
-    occ("app:enable", "richdocuments")
+    occ(None, "app:install", "richdocuments")
+    occ(None, "app:enable", "richdocuments")
 
 
 def main():
