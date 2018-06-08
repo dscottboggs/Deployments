@@ -2,6 +2,7 @@ from deployments            import BasicRsyncBackup, client
 from deployments.nextcloud  import user_info
 from os.path                import dirname, abspath, join
 from datetime               import datetime
+from multiprocessing        import Process
 
 
 class BackupNextcloud(BasicRsyncBackup):
@@ -20,10 +21,22 @@ class BackupNextcloud(BasicRsyncBackup):
 
     def do_backup(self, *args, **kwargs):
         """Override to add extra steps."""
-        self.prep_folder(self.backup_dir)
-        self.prep_folder(self.stage)
-        self.backup_database()
-        super().do_backup(*args, **kwargs)
+        procs = [
+            Process(target=self.prep_folder, args=(self.backup_dir)),
+            Process(target=self.prep_folder, args=(self.stage)),
+        ]
+        for proc in procs:
+            proc.start()
+        for proc in procs:
+            proc.join()
+        procs = [
+            Process(target=self.backup_database),
+            Process(target=super().do_backup, args=args, kwargs=kwargs)
+        ]
+        for proc in procs:
+            proc.start()
+        for proc in procs:
+            proc.join()
 
     def backup_database(self):
         """Get a dump from the database and store it in the staging area."""
