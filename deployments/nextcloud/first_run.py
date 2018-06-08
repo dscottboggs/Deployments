@@ -144,6 +144,12 @@ def setup_users():
                 print("Please remember to set email in the GUI.")
 
 
+def install_collabora_in_nextcloud(container):
+    """Install the Collabora app into nextcloud."""
+    occ("app:install", "richdocuments")
+    occ("app:enable", "richdocuments")
+
+
 def main():
     """Perform each of the installation steps.
 
@@ -154,6 +160,7 @@ def main():
     cont = install_nextcloud(cont)
     set_trusted_domains(cont)
     setup_users()
+    install_collabora_in_nextcloud()
 
 
 if __name__ == '__main__':
