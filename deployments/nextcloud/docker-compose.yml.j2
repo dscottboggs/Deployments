@@ -33,6 +33,8 @@ services:
       - "domain=cloud\\.{{ url_2ld }}\\.{{ url_tld }}"
     expose:
       - '9980'
+    ports:
+      - '9980:9980'
   database:
     image: mariadb:latest
     restart: always
