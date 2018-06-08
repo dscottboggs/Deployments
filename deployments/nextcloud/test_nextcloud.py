@@ -15,16 +15,16 @@ def test_index():
             assert response.ok
             assert response.history
             assert response.history[0].status_code == 301
-            assert response.history[0].url == "http://{}".format(url)
+            assert response.history[0].url == "http://{}/".format(url)
             assert response.history[1].status_code == 302
-            assert response.history[1].url == "https://{}".format(url)
+            assert response.history[1].url == "https://{}/".format(url)
             assert response.status_code == 200
             assert response.url == "https://{}/login".format(url)
-            response = get("https://{}".format(url))
+            response = get("https://{}/".format(url))
             assert response.ok
             assert response.history
             assert response.history[0].status_code == 302
-            assert response.history[0].url == "https://{}".format(url)
+            assert response.history[0].url == "https://{}/".format(url)
             assert response.status_code == 200
             assert response.url == "https://{}/login".format(url)
         except SSLError:
