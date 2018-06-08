@@ -55,7 +55,7 @@ def compose():
 def install_nextcloud(nextcloud_container):
     assert nextcloud_container.status == u"running"
     assert user_info[u'database'] != 'password'
-    assert "localhost" not in user_info[u'urls'], \
+    assert "localhost" not in user_info[u'url'], \
         "Since this process automates SSL verification, you must use a valid"\
         + "URL."
     if not occ(
@@ -86,7 +86,7 @@ def set_trusted_domains(nextcloud_container):
     TODO handle more than one URL.
     """
     cmd_output = nextcloud_container.exec_run(
-        "sed -i s/localhost/%s/ config/config.php" % user_info['urls'][0]
+        "sed -i s/localhost/%s/ config/config.php" % user_info['url'][0]
     )
     if cmd_output.exit_code:
         print("Error running the command to update the config:")
