@@ -7,8 +7,8 @@ services:
         - ./config:/etc/nginx
         - ./webroot:/usr/share/nginx/html
       environment:
-        VIRTUAL_HOST:       s.scott.tams.tech
-        LETSENCRYPT_HOST:   s.scott.tams.tech
+        VIRTUAL_HOST:       scott.tams.tech
+        LETSENCRYPT_HOST:   scott.tams.tech
         LETSENCRYPT_EMAIL:  sysadmin@tams.tech
       expose:
         - '80'
