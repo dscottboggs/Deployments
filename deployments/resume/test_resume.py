@@ -4,7 +4,7 @@ from requests               import get
 from requests.exceptions    import SSLError
 from hashlib                import md5
 
-urls = ["scott.tams.tech"]
+urls = ["s.scott.tams.tech"]
 
 
 class FileData:
