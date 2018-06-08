@@ -7,6 +7,7 @@ from os.path            import isdir
 from shutil             import rmtree
 from deployments.misc   import TerminalOutputModifiers
 from docker             import DockerClient
+from multiprocessing	import Process
 
 
 client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
@@ -33,12 +34,21 @@ class BasicRsyncBackup:
 
     def do_backup(self, cronjob_freq=None, backup_script=None):
         """Perform each step in the backup procedure."""
-        self.prep_folder(self.backup_dir)
-        self.prep_folder(self.stage)
+        procs = [
+            Process(target=self.prep_folder, args=(self.backup_dir)),
+            Process(target=self.prep_folder, args=(self.stage)),
+            Process(
+                target=lambda cf, bs: if cf: setup_cronjob(cf, bs),
+                args=(cronjob_freq, backup_script)
+            )
+        ]
+        for proc in procs:
+            proc.start()
+        for proc in procs:
+            proc.join()
         self.copy_files_to_stage()
         self.archive()
-        if cronjob_freq:
-            self.setup_cronjob(cronjob_freq, backup_script)
+        self.delete_stage()
 
     def copy_files_to_stage(self):
         """Copy the files themselves and their attrs to a staging area."""
