@@ -50,7 +50,7 @@ def test_upload():
     This test uses the backend WebDAV REST api and hence contains no
     checks for the actual GUI interface.
     """
-    for url in user_info['urls']
+    for url in user_info['urls']:
         try:
             user = user_info['admin'][0]
             response = put(
