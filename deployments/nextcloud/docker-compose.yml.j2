@@ -17,12 +17,17 @@ services:
       LETSENCRYPT_EMAIL: {{ admin_email }}
   office-suite:
     image: collabora/code
+    restart: always
+    cap_add:
+      - MKNOD
     networks:
       - reverse_proxy_default
     environment:
       VIRTUAL_HOST: office.{{ url }}
       LETSENCRYPT_HOST: office.{{ url }}
       LETSENCRYPT_EMAIL: {{ admin_email }}
+    expose:
+      - '9980'
   database:
     image: mariadb:latest
     restart: always
