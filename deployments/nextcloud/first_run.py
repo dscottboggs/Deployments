@@ -144,7 +144,7 @@ def setup_users():
                 print("Please remember to set email in the GUI.")
 
 
-def install_collabora_in_nextcloud(container):
+def install_collabora_in_nextcloud():
     """Install the Collabora app into nextcloud."""
     occ(None, "app:install", "richdocuments")
     occ(None, "app:enable", "richdocuments")
