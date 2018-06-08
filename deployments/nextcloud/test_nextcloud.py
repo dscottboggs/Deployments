@@ -9,7 +9,7 @@ from subprocess             import check_call
 
 def test_index():
     """Test that the root URLs respond properly."""
-    url = user_info['url']
+    url = "cloud.%s" % user_info['url']
     try:
         response = get("http://{}/".format(url))
         assert response.ok
@@ -50,7 +50,7 @@ def test_upload():
     This test uses the backend WebDAV REST api and hence contains no
     checks for the actual GUI interface.
     """
-    url = user_info['url']
+    url = "cloud.%s" % user_info['url']
     try:
         user = user_info['admin'][0]
         response = put(
@@ -82,7 +82,7 @@ def test_upload():
 
 def test_upload_survives():
     """Test that an uploaded file survives container destruction."""
-    url = user_info['url']
+    url = "cloud.%s" % user_info['url']
     try:
         user = user_info['admin'][0]
         response = put(

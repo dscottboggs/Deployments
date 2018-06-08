@@ -86,7 +86,9 @@ def set_trusted_domains(nextcloud_container):
     TODO handle more than one URL.
     """
     cmd_output = nextcloud_container.exec_run(
-        "sed -i s/localhost/%s/ config/config.php" % user_info['url'][0]
+        "sed -i s/localhost/%s/ config/config.php" % (
+            "cloud." + user_info['url']
+        )
     )
     if cmd_output.exit_code:
         print("Error running the command to update the config:")
