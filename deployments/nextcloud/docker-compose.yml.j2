@@ -18,16 +18,19 @@ services:
   office-suite:
     image: collabora/code
     restart: always
+    links:
+      - frontend
     cap_add:
       - MKNOD
     networks:
       - reverse_proxy_default
     environment:
-      VIRTUAL_HOST: office.{{ url }}
-      VIRTUAL_PORT: '9980'
-      LETSENCRYPT_HOST: office.{{ url }}
-      LETSENCRYPT_EMAIL: {{ admin_email }}
-      domain: cloud.{{ url }}
+      - VIRTUAL_HOST=office.{{ url }}
+      - VIRTUAL_PORT='9980'
+      - VIRTUAL_PROTO=HTTPS
+      - LETSENCRYPT_HOST=office.{{ url }}
+      - LETSENCRYPT_EMAIL={{ admin_email }}
+      - "domain=cloud\\.{{ url_2ld }}\\.{{ url_tld }}"
     expose:
       - '9980'
   database:

@@ -39,7 +39,9 @@ def compose():
             {
                 u"password":    user_info[u'database'],
                 u"url":         url,
-                u"admin_email": user_info[u'admin'][0]['email']
+                u"admin_email": user_info[u'admin'][0]['email'],
+                "url_2ld": url.rsplit('.', maxsplit=1)[0],
+                "url_tld": url.rsplit('.', maxsplit=1)[1]
             }
         )
     with open(join(THIS_DIR, "docker-compose.yml"), 'w') as compose_file:
