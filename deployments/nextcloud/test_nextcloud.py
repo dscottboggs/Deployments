@@ -82,7 +82,7 @@ def test_upload():
 
 def test_upload_survives():
     """Test that an uploaded file survives container destruction."""
-    for user in user_info['urls']:
+    for url in user_info['urls']:
         try:
             user = user_info['admin'][0]
             response = put(
