@@ -24,6 +24,7 @@ services:
       - reverse_proxy_default
     environment:
       VIRTUAL_HOST: office.{{ url }}
+      VIRTUAL_PORT: '9980'
       LETSENCRYPT_HOST: office.{{ url }}
       LETSENCRYPT_EMAIL: {{ admin_email }}
     expose:
