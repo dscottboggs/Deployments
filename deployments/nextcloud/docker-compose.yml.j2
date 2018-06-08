@@ -12,8 +12,16 @@ services:
       - nextcloud_db_network
       - reverse_proxy_default
     environment:
-      VIRTUAL_HOST: {{ url }}
-      LETSENCRYPT_HOST: {{ url }}
+      VIRTUAL_HOST: cloud.{{ url }}
+      LETSENCRYPT_HOST: cloud.{{ url }}
+      LETSENCRYPT_EMAIL: {{ admin_email }}
+  office-suite:
+    image: collabora/code
+    networks:
+      - reverse_proxy_default
+    environment:
+      VIRTUAL_HOST: office.{{ url }}
+      LETSENCRYPT_HOST: office.{{ url }}
       LETSENCRYPT_EMAIL: {{ admin_email }}
   database:
     image: mariadb:latest

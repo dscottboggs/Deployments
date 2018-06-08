@@ -34,15 +34,13 @@ class ContainerDidNotStartException(Exception): pass
 def compose():
     """Create the docker-compose file from the template and call 'up' on it."""
     urls = ''
-    if not user_info.get('urls'):
+    if not user_info.get('url'):
         print("At least one URL must be specified.")
         exit(1)
-    elif len(user_info['urls']) == 1:
-        urls = user_info['urls'][0]
+    elif len(user_info['url']) == 1:
+        urls = user_info['url'][0]
     else:
-        for url in user_info['urls'][:-1]:
-            urls += url + ','
-        urls += user_info['urls'][-1]
+        raise ValueError("Only one URL can be specified as of yet.")
     with open(join(THIS_DIR, "docker-compose.yml.j2"), 'r') as compose_file:
         composition_text = Template(compose_file.read()).render(
             {

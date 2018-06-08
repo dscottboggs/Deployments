@@ -13,6 +13,6 @@ others:
     email: you@get.the
     password: idea.jpg
 database: password
-urls:
-  - cloud.example.org
-  - m.cloud.example.org
+urls: example.org
+# example.org must have cloud.example.org and office.example.org pointing here,
+# not example.org.
