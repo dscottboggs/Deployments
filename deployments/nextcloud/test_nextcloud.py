@@ -9,7 +9,7 @@ from subprocess             import check_call
 
 def test_index():
     """Test that the root URLs respond properly."""
-    url = user_info['url']:
+    url = user_info['url']
     try:
         response = get("http://{}/".format(url))
         assert response.ok
