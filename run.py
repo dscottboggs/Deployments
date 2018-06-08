@@ -11,6 +11,7 @@ from re                                 import search, match
 from getpass                            import getpass
 from yaml                               import dump
 from time                               import sleep
+from multiprocessing                    import Process
 
 
 THIS_DIR = dirname(abspath(__file__))
@@ -132,7 +133,6 @@ def bring_up_service_at(filepath):
 
 def setup_nextcloud():
     """Setup the nextcloud service."""
-    ask_for_admin_user()
     from deployments.nextcloud.first_run import main as install_nextcloud
     from deployments.nextcloud.backup import BackupNextcloud
     nextcloud_dir = join(
@@ -202,8 +202,17 @@ def main():
             "no reason you can't just run `sudo python run.py`."
         )
         exit(1)
-    setup_reverse_proxy()
-    setup_resume()
+    def setups_for_async():
+        setup_reverse_proxy()
+        setup_resume()
+    procs = [
+        Process(target=ask_for_admin_user),
+        Process(target=setups_for_async)
+    ]
+    for proc in procs:
+        proc.start()
+    for proc in procs:
+        proc.join()
     setup_nextcloud()
 
 
