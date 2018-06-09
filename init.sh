@@ -3,9 +3,8 @@
 username=$USER
 
 function handle_error() {
-    echo "Error while executing"
-    echo $1
-    exit $2
+    echo "Error while ${@:2}."
+    exit $1
 }
 
 function install_docker_wget() {
@@ -13,7 +12,7 @@ function install_docker_wget() {
         wget -qO - https://get.docker.com | sh \
             && systemctl enable docker  \
             && systemctl start docker ' \
-        || handle_error "Docker installation" $PIPESTATUS
+        || handle_error $? installing docker
 }
 
 function install_ubuntu() {
@@ -35,7 +34,7 @@ function install_centos() {
 
 
 which sudo || apt install -y sudo || yum install -y sudo \
-    || handle_error "Installation of sudo" $?
+    || handle_error $? installing sudo
 
 if [ $USER = "root" ]; then
     echo "This script will elevate itself to SU privileges when necessary."
@@ -46,17 +45,18 @@ fi
 sudo apt update  \
     && install_ubuntu \
     || install_centos
+    || handle_error $? installing dependencies
 
-mkdir $HOME/.ssh || handle_error "Creating $HOME/.ssh" $?
-ssh-keygen -t ed25519 -f $HOME/.ssh/id_ed25519 -q || handle_error "Creating cryptographic identity" $?
-chmod 700 $HOME/.ssh
-    && chmod 600 $HOME/.ssh/id_ed25519
-    && chmod 444 $HOME/.ssh/id_ed25519.pub
-    || handle_error "Changing permissions of the $HOME/.ssh/ dir" $?
-echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICa1xQPW/kFnPrO51Mp5gWpEpRZO8d6vtrWxIIpOoFd4 scott@scotts-server
-' > $HOME/.ssh/authorized_keys
+wd=$PWD
 cd /opt && \
-    git clone --recursive https://github.com/dscottboggs/Deployments.git
-cd /opt/Deployments      &&\
-    python3 setup.py install   &&\
-    python3 run.py
+    git clone --recursive https://github.com/dscottboggs/Deployments.git \
+    || handle_error $? cloning repository.
+
+sudo python3 /opt/Deployments/setup.py install \
+    || handle_error $? running python\'s setup.py installation.
+
+echo Installation complete. Running...
+sudo python3 /opt/Deployments/run.py \
+    || handle_error $? running the installed script.
+
+cd $wd
