@@ -10,7 +10,7 @@ the repository into `./Deployments`, installs the python module,
 then finally performs the deployment and initial backup with
 `run.py`.
 
-# TODO uninstall script
+(TODO uninstall script)
 
 I have been doing testing in an otherwise blank, up-to-date Ubuntu
 18.04 on qemu.
