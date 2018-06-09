@@ -3,7 +3,7 @@ Containerized deployments, tested with pytest, and secured with LetsEncrypt.
 
 Deploy in a single step on a CentOS7 or Ubuntu 18.04 system:
 
-    sudo su -c 'wget https://raw.githubusercontent.com/dscottboggs/Deployments/master/init.sh | bash'
+    sudo su -c 'wget -O - https://raw.githubusercontent.com/dscottboggs/Deployments/master/init.sh | bash'
 
 This installs the base dependencies with aptitude or yum, clones
 the repository into `./Deployments`, installs the python module,
