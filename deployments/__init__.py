@@ -7,10 +7,14 @@ from os.path            import isdir
 from shutil             import rmtree
 from deployments.misc   import TerminalOutputModifiers
 from docker             import DockerClient
+from yaml               import load
 
 
 client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
 font   = TerminalOutputModifiers()
+
+with open(join(THIS_DIR, "config.yml"), u'r') as uInfo_file:
+    user_config = load(uInfo_file)
 
 
 class BasicRsyncBackup:

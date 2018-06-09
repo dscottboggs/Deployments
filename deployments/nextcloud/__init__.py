@@ -4,14 +4,9 @@ See README for usage.
 """
 from deployments    import client
 from os.path        import join, abspath, dirname
-from yaml           import load
 
 
 THIS_DIR = dirname(abspath(__file__))
-
-
-with open(join(THIS_DIR, "user.yml"), u'r') as uInfo_file:
-    user_info = load(uInfo_file)
 
 
 def occ(environment, *cmdargs):

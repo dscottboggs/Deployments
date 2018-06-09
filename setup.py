@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="tested_deployments",
-    version="0.2.0",
+    version="0.3.0",
     author="D. Scott Boggs",
     author_email="scott@tams.tech",
     url="https://github.com/dscottboggs/Deployments",

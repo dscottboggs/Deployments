@@ -1,6 +1,6 @@
 __pycache__/
 .cache/
 certs/
-user.yml
+config.yml
 nextcloud/docker-compose.yml
 *.pyc

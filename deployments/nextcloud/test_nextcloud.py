@@ -2,7 +2,8 @@
 from requests               import get, put, delete
 from requests.exceptions    import SSLError
 from yaml                   import load
-from deployments.nextcloud  import user_info, client, occ, THIS_DIR
+from deployments.nextcloud  import client, occ, THIS_DIR
+from deployments            import user_config
 from deployments.misc       import wait
 from subprocess             import check_call
 

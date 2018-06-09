@@ -1,7 +1,7 @@
-from deployments            import BasicRsyncBackup, client
-from deployments.nextcloud  import user_info
-from os.path                import dirname, abspath, join
-from datetime               import datetime
+from deployments    import BasicRsyncBackup, client
+from deployments    import user_config
+from os.path        import dirname, abspath, join
+from datetime       import datetime
 
 
 class BackupNextcloud(BasicRsyncBackup):
@@ -29,7 +29,7 @@ class BackupNextcloud(BasicRsyncBackup):
         """Get a dump from the database and store it in the staging area."""
         dump_result = self.container.exec_run(
             "mysqldump -u nextcloud --password='%s' nextcloud"
-            % user_info['database']
+            % user_config['database']
         )
         if dump_result.exit_code:
             raise ValueError(
