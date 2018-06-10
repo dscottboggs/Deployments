@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-username=$USER
+wd=$PWD
 
 function handle_error() {
     echo "Error while ${@:2}."
+    cd $wd
     exit $1
 }
 
@@ -47,10 +48,11 @@ sudo apt update  \
     || install_centos \
     || handle_error $? installing dependencies
 
-wd=$PWD
 cd /opt && \
-    git clone --recursive https://github.com/dscottboggs/Deployments.git \
+    sudo git clone --recursive https://github.com/dscottboggs/Deployments.git \
     || handle_error $? cloning repository.
+
+sudo chown $USER:$USER /opt/Deployments || handle_error $? changing permissions of repository.
 
 sudo python3 /opt/Deployments/setup.py install \
     || handle_error $? running python\'s setup.py installation.
@@ -58,5 +60,3 @@ sudo python3 /opt/Deployments/setup.py install \
 echo Installation complete. Running...
 sudo python3 /opt/Deployments/run.py \
     || handle_error $? running the installed script.
-
-cd $wd
