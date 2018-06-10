@@ -15,8 +15,8 @@ function remove_cronjobs() {
 }
 function remove_containers() {
     echo -n removing $1...
-    cd $parent_dir/Deployments/deployments/$2
-        && docker-compose down > /dev/null
+    cd $parent_dir/Deployments/deployments/$2   \
+        && docker-compose down > /dev/null      \
         && echo done.
 }
 
