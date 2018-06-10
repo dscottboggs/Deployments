@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-$parent_dir=$HOME/.local/share
+parent_dir=$HOME/.local/share
 
 function rm_backups() {
     rm --force --recursive --interactive=once /backup
