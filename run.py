@@ -151,8 +151,15 @@ def setup_nextcloud():
     run_tests_at(nextcloud_dir)
     brp = BackupReverseProxy()
     bnc = BackupNextcloud()
-    brp.do_backup()
-    bnc.do_backup('daily', join(nextcloud_dir, "backup.py"))
+    procs = [
+        Process(target=brp.do_backup),
+        Process(
+            target=bnc.do_backup,
+            args=('daily', join(nextcloud_dir, "backup.py"))
+        )
+    ]
+    for proc in procs: proc.start()
+    for proc in procs: proc.join()
 
 
 def setup_resume():
