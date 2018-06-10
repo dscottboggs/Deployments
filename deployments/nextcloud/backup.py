@@ -2,6 +2,7 @@ from deployments    import BasicRsyncBackup, client
 from deployments    import user_config
 from os.path        import dirname, abspath, join
 from datetime       import datetime
+from sys            import argv
 
 
 class BackupNextcloud(BasicRsyncBackup):
@@ -43,7 +44,19 @@ class BackupNextcloud(BasicRsyncBackup):
 
 def main():
     """The main entrypoint of the backup script if it's run alone."""
-    backup = BackupNextcloud('daily', abspath(__file__))
+    if "--no-cronjob" in argv:
+        # setup cron job
+        freq = False
+    else:
+        if '--freq=hourly' in argv:
+            freq = 'hourly'
+        if '--freq=weekly' in argv:
+            freq = 'weekly'
+        if '--freq=monthly' in argv:
+            freq = 'monthly'
+        else:
+            freq = 'daily'
+    backup = BackupNextcloud(freq, abspath(__file__))
     backup.do_backup()
 
 
