@@ -44,7 +44,7 @@ fi
 
 sudo apt update  \
     && install_ubuntu \
-    || install_centos
+    || install_centos \
     || handle_error $? installing dependencies
 
 wd=$PWD
