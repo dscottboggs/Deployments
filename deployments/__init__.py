@@ -1,9 +1,9 @@
 """Backup the certificates and configurations stored in ./mounts/"""
 from subprocess         import check_call
 from tarfile            import TarFile
-from os                 import makedirs, access, F_OK as file_exists, join
+from os                 import makedirs, access, F_OK as file_exists
 from os                 import getcwd, chdir
-from os.path            import isdir
+from os.path            import isdir, join
 from shutil             import rmtree
 from deployments.misc   import TerminalOutputModifiers
 from docker             import DockerClient
