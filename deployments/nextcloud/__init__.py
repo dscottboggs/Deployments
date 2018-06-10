@@ -3,10 +3,6 @@
 See README for usage.
 """
 from deployments    import client
-from os.path        import join, abspath, dirname
-
-
-THIS_DIR = dirname(abspath(__file__))
 
 
 def occ(environment, *cmdargs):

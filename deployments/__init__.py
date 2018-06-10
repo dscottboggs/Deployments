@@ -3,7 +3,7 @@ from subprocess         import check_call
 from tarfile            import TarFile
 from os                 import makedirs, access, F_OK as file_exists
 from os                 import getcwd, chdir
-from os.path            import isdir, join
+from os.path            import isdir, join, dirname, abspath
 from shutil             import rmtree
 from deployments.misc   import TerminalOutputModifiers
 from docker             import DockerClient
@@ -13,6 +13,7 @@ from yaml               import load
 client = DockerClient(u"unix://var/run/docker.sock", version=u"1.30")
 font   = TerminalOutputModifiers()
 
+THIS_DIR = dirname(abspath(__file__))
 with open(join(THIS_DIR, "config.yml"), u'r') as uInfo_file:
     user_config = load(uInfo_file)
 

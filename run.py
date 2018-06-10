@@ -1,16 +1,15 @@
-from subprocess                         import run, CalledProcessError
-from os                                 import access, F_OK as file_exists
-from os                                 import R_OK as file_is_readable
-from os                                 import environ, getuid, getgid
-from os.path                            import abspath, dirname, join
-from deployments.reverse_proxy.backup   import BackupReverseProxy
-from deployments.misc                   import random_words, wait
-from deployments                        import client
-from pytest                             import main as pytest
-from re                                 import search, match
-from getpass                            import getpass
-from yaml                               import dump
-from time                               import sleep
+from subprocess         import run, CalledProcessError
+from os                 import access, F_OK as file_exists
+from os                 import R_OK as file_is_readable
+from os                 import environ, getuid, getgid
+from os.path            import abspath, dirname, join
+from misc               import random_words, wait
+from pytest             import main as pytest
+from re                 import search, match
+from getpass            import getpass
+from yaml               import dump
+from time               import sleep
+from multiprocessing    import Process
 
 
 THIS_DIR = dirname(abspath(__file__))
@@ -29,7 +28,7 @@ def ask_for_admin_user():
             if response.lower()[0] == "y":
                 if environ.get('EDITOR'):
                     run("%s %s" % (
-                        environ.get('EDITOR'),
+                        environ['EDITOR'],
                         join(THIS_DIR, "deployments", "config.yml")
                     ), shell=True, check=True)
                 else:
@@ -132,8 +131,9 @@ def bring_up_service_at(filepath):
 
 def setup_nextcloud():
     """Setup the nextcloud service."""
-    from deployments.nextcloud.first_run import main as install_nextcloud
-    from deployments.nextcloud.backup import BackupNextcloud
+    from deployments.nextcloud.first_run    import main as install_nextcloud
+    from deployments.nextcloud.backup       import BackupNextcloud
+    from deployments.reverse_proxy.backup   import BackupReverseProxy
     nextcloud_dir = join(
         THIS_DIR,
         "deployments",
@@ -157,6 +157,7 @@ def setup_nextcloud():
 
 def setup_resume():
     """Setup my resume site."""
+    from deployments.reverse_proxy.backup   import BackupReverseProxy
     resume_filepath = join(
         abspath(dirname(__file__)),
         "deployments",
@@ -177,6 +178,7 @@ def setup_resume():
 
 def setup_reverse_proxy():
     """Setup the reverse proxy containers."""
+    from deployments.reverse_proxy.backup   import BackupReverseProxy
     bring_up_service_at(reverse_proxy_path)
     run_tests_at(reverse_proxy_path)
     try:
