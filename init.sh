@@ -17,7 +17,7 @@ function install_docker_wget() {
 }
 
 function install_ubuntu() {
-    sudo apt install -y python3-pip python3-docker python3-pytest
+    sudo apt install -y python3-pip python3-docker python3-pytest \
         python3-jinja2 vim zsh rsync git apt-transport-https ca-certificates \
         software-properties-common
     install_docker_wget
