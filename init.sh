@@ -48,15 +48,18 @@ sudo apt update  \
     || install_centos \
     || handle_error $? installing dependencies
 
-cd /opt && \
-    sudo git clone --recursive https://github.com/dscottboggs/Deployments.git \
+parent_dir=$HOME/.local/share
+mkdir -p parent_dir || handle_error $? creating parent directory
+
+cd $parent_dir && \
+    git clone --recursive https://github.com/dscottboggs/Deployments.git \
     || handle_error $? cloning repository.
 
-sudo chown $USER:$USER /opt/Deployments || handle_error $? changing permissions of repository.
-
-sudo python3 /opt/Deployments/setup.py install \
+sudo python3 $parent_dir/Deployments/setup.py install \
     || handle_error $? running python\'s setup.py installation.
 
 echo Installation complete. Running...
-sudo python3 /opt/Deployments/run.py \
+sudo python3 $parent_dir/Deployments/run.py \
     || handle_error $? running the installed script.
+
+cd $wd
