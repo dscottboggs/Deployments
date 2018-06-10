@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+$parent_dir=$HOME/.local/share
+
 function rm_backups() {
     rm --force --recursive --interactive=once /backup
 }
@@ -13,7 +15,7 @@ function remove_cronjobs() {
 }
 function remove_containers() {
     echo -n removing $1...
-    cd /opt/Deployments/deployments/$2
+    cd $parent_dir/Deployments/deployments/$2
         && docker-compose down > /dev/null
         && echo done.
 }
@@ -26,7 +28,7 @@ docker container prune
 docker image prune -a
 docker volume prune
 
-rm --force --recursive /opt/Deployments
+rm --force --recursive $parent_dir/Deployments
 echo Would you also like to remove the backups? (default NO)
 select yn in YES NO; do
     case $yn in
