@@ -6,14 +6,15 @@ from deployments    import BasicRsyncBackup
 
 class BackupReverseProxy(BasicRsyncBackup):
     """Methods for backing up the reverse proxy mounts."""
-    backup_dir = "/backup/reverse_proxy"
     source_dir = join(
         abspath(dirname(__file__)),
         "mounts"
     )
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """Initialize variables needed for all methods."""
+        super().__init__(*args, **kwargs)
+        self.backup_dir = "/backup/%s" % self.name
         self.now = int(datetime.now().strftime('%s'))  # the current epoch time
         self.stage = "%(bd)s/staging/%(t)s" % {
             'bd': self.backup_dir, 't': self.now
@@ -22,7 +23,6 @@ class BackupReverseProxy(BasicRsyncBackup):
 
 def main():
     """Code to execute this file as a script."""
-    backup = BackupReverseProxy()
     if "--no-cronjob" in argv:
         # setup cron job
         freq = None
@@ -35,7 +35,8 @@ def main():
             freq = 'monthly'
         else:
             freq = 'weekly'
-    backup.do_backup(freq, abspath(__file__))
+    backup = BackupReverseProxy(freq, abspath(__file__))
+    backup.do_backup()
 
 
 if __name__ == '__main__':

@@ -26,6 +26,20 @@ class BasicRsyncBackup:
         - source_dir
     """
 
+    def __init__(self, name, cronjob_freq=None, backup_script=None):
+        """Initialize a backup object.
+
+        The name is the name of the service, to be used in filenames and
+        whatnot.
+
+        The cronjob_freq must be "weekly", "monthly", "daily", or "hourly".
+
+        The backup_script needs to be the path to the actual backup script.
+        """
+        self.name = name
+        self.cronjob_freq = cronjob_freq
+        self.backup_script = backup_script
+
     @staticmethod
     def prep_folder(folder):
         """Make sure that the folder exists and is writable."""
@@ -74,14 +88,18 @@ class BasicRsyncBackup:
             tarchive.add('.')
         chdir(pwd)
 
-    def setup_cronjob(self, frequency, backup_script):
-        """Save this script to the cron.{frequency} folder.
-
-        `frequency` must be "weekly", "monthly", "daily", or "hourly".
-        """
+    def setup_cronjob(self):
+        """Save this script to the cron.{self.cronjob_freq} folder."""
+        if not self.backup_script:
+            raise AttributeError(
+                "Need the location of the actual backup script to write the "
+                "cronjob."
+            )
         with open(
-                    "/etc/cron.%s/backup_reverse_proxy.sh" % frequency, 'w'
+                    "/etc/cron.%s/backup_%s.sh" % (
+                        self.cronjob_freq, self.name
+                    ), 'w'
                 ) as cronjob:
             cronjob.write(
                 "#!/bin/sh\npython %s --no-cronjob" % backup_script
-            )
+            )   # "no-cronjob" tells it to not do this step again.

@@ -10,8 +10,9 @@ class BackupNextcloud(BasicRsyncBackup):
     backup_dir = "/backup/nextcloud"
     source_dir = join(dirname(abspath(__file__)), "mounts", "webroot")
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """Initialize variables that are dynamic."""
+        super().__init__(*args, **kwargs)
         self.now = int(datetime.now().strftime(r"%s"))
         self.stage = join(self.backup_dir, "staging", str(self.now))
         self.container = client.containers.list(
@@ -42,8 +43,8 @@ class BackupNextcloud(BasicRsyncBackup):
 
 def main():
     """The main entrypoint of the backup script if it's run alone."""
-    backup = BackupNextcloud()
-    backup.do_backup('daily', abspath(__file__))
+    backup = BackupNextcloud('daily', abspath(__file__))
+    backup.do_backup()
 
 
 if __name__ == '__main__':
