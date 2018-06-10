@@ -49,7 +49,7 @@ sudo apt update  \
     || handle_error $? installing dependencies
 
 parent_dir=$HOME/.local/share
-mkdir -p parent_dir || handle_error $? creating parent directory
+mkdir -p $parent_dir || handle_error $? creating parent directory
 
 cd $parent_dir && \
     git clone --recursive https://github.com/dscottboggs/Deployments.git \
