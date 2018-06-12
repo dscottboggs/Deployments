@@ -203,7 +203,6 @@ def setup_reverse_proxy():
 
 
 def main():
-    ask_for_admin_user()
     if not (getuid() == 0 and getgid() == 0):
         print(
             "This application is intended to be run as root. I would "
@@ -211,6 +210,7 @@ def main():
             "no reason you can't just run `sudo python run.py`."
         )
         exit(1)
+    ask_for_admin_user()
     setup_reverse_proxy()
     setup_resume()
     setup_nextcloud()
